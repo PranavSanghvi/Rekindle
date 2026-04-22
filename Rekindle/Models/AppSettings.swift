@@ -12,7 +12,7 @@ enum SchedulePreset: String, Codable, CaseIterable {
 @Model
 final class AppSettings {
     /// How many contacts to recommend per session
-    var contactsPerSession: Int = 3
+    var contactsPerSession: Int = 2
 
     /// Schedule preset
     var schedulePresetRawValue: String = SchedulePreset.daily.rawValue
@@ -22,7 +22,7 @@ final class AppSettings {
     var customDaysString: String = ""
 
     /// Time of day for notifications (only hour/minute are used)
-    var notificationHour: Int = 9
+    var notificationHour: Int = 10
     var notificationMinute: Int = 0
 
     /// Cooldown in days before someone can be re-recommended

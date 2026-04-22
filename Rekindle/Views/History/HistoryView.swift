@@ -16,7 +16,7 @@ struct HistoryView: View {
                     historyList
                 }
             }
-            .background(Color(.systemGroupedBackground))
+            .background(Theme.dynamicAppBackground)
             .navigationTitle("History")
             .onAppear {
                 viewModel.setup(modelContext: modelContext)
@@ -27,9 +27,8 @@ struct HistoryView: View {
 
     private var emptyView: some View {
         VStack(spacing: 20) {
-            Image(systemName: "clock.arrow.circlepath")
-                .font(.system(size: 60))
-                .foregroundStyle(Theme.warmGradient)
+            Text("🕰️")
+                .font(.system(size: 80))
             Text("No History Yet")
                 .font(Theme.title)
             Text("Your recommendation history will appear here once you start using Rekindle.")
@@ -39,21 +38,43 @@ struct HistoryView: View {
                 .padding(.horizontal, Theme.paddingLarge)
         }
         .padding()
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
     private var historyList: some View {
-        List {
-            ForEach(viewModel.groupedByDate, id: \.date) { group in
-                Section {
-                    ForEach(group.recommendations) { rec in
-                        HistoryItemView(recommendation: rec)
-                    }
-                } header: {
-                    Text(group.date, format: .dateTime.weekday(.wide).month().day())
+        ScrollView {
+            LazyVStack(spacing: Theme.paddingLarge) {
+                ForEach(viewModel.groupedByDate, id: \.date) { group in
+                    historySection(date: group.date, recommendations: group.recommendations)
                 }
             }
+            .padding(.horizontal, Theme.paddingMedium)
+            .padding(.vertical, Theme.paddingLarge)
         }
-        .listStyle(.insetGrouped)
+    }
+
+    @ViewBuilder
+    private func historySection(date: Date, recommendations: [Recommendation]) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text(date.formatted(.dateTime.weekday(.wide).month().day()).uppercased())
+                .font(.system(.caption, design: .rounded, weight: .bold))
+                .foregroundStyle(.secondary)
+                .padding(.leading, Theme.paddingMedium)
+            
+            VStack(spacing: 0) {
+                ForEach(Array(recommendations.enumerated()), id: \.element.id) { index, rec in
+                    HistoryItemView(recommendation: rec)
+                        .padding(.vertical, 12)
+                        .padding(.horizontal, Theme.paddingMedium)
+                    
+                    if index != recommendations.count - 1 {
+                        Divider()
+                            .padding(.leading, 64)
+                    }
+                }
+            }
+            .cardStyle() // Soft UI rounded corners and floating shadow
+        }
     }
 }
 
@@ -90,13 +111,13 @@ struct HistoryItemView: View {
     private var statusBadge: some View {
         HStack(spacing: 4) {
             Image(systemName: statusIcon)
-                .font(.caption2)
+                .font(.caption2.weight(.bold))
             Text(statusText)
-                .font(.system(.caption2, design: .rounded, weight: .medium))
+                .font(.system(.caption2, design: .rounded, weight: .bold))
         }
         .foregroundStyle(statusColor)
-        .padding(.horizontal, 8)
-        .padding(.vertical, 4)
+        .padding(.horizontal, 10)
+        .padding(.vertical, 6)
         .background(statusColor.opacity(0.12))
         .clipShape(Capsule())
     }
@@ -106,7 +127,9 @@ struct HistoryItemView: View {
         case .done: return "checkmark.circle.fill"
         case .skipped: return "forward.fill"
         case .postponed: return "clock.arrow.circlepath"
-        case .expired: return "exclamationmark.circle"
+        case .expired: return "exclamationmark.triangle.fill"
+        case .snoozed: return "moon.zzz.fill"
+        case .blocked: return "hand.raised.fill"
         case .pending: return "circle"
         }
     }
@@ -117,6 +140,8 @@ struct HistoryItemView: View {
         case .skipped: return "Skipped"
         case .postponed: return "Later"
         case .expired: return "Missed"
+        case .snoozed: return "Snoozed"
+        case .blocked: return "Blocked"
         case .pending: return "Pending"
         }
     }
@@ -126,8 +151,10 @@ struct HistoryItemView: View {
         case .done: return Theme.done
         case .skipped: return .secondary
         case .postponed: return Theme.postponed
-        case .expired: return .orange
-        case .pending: return .blue
+        case .expired: return Theme.amber
+        case .snoozed: return Theme.amber
+        case .blocked: return .red
+        case .pending: return Theme.dustyBlue
         }
     }
 }

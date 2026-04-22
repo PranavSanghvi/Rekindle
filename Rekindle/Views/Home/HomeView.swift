@@ -28,7 +28,7 @@ struct HomeView: View {
                 .padding(.horizontal, Theme.paddingMedium)
                 .padding(.top, Theme.paddingSmall)
             }
-            .background(Color(.systemGroupedBackground))
+            .background(Theme.dynamicAppBackground)
             .navigationTitle("Today")
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
@@ -53,6 +53,8 @@ struct HomeView: View {
             .sheet(item: $viewModel.showSnoozeFor) { contact in
                 SnoozeSheet(contactName: contact.fullName) { date in
                     viewModel.snoozeContact(contact, until: date)
+                } onBlock: {
+                    viewModel.blockContact(contact)
                 }
             }
             .overlay {
@@ -110,7 +112,7 @@ struct HomeView: View {
                             Text("Yes!")
                         }
                     }
-                    .buttonStyle(GradientButtonStyle())
+                    .buttonStyle(GradientPillButtonStyle())
                 }
             }
             .padding(Theme.paddingLarge)
@@ -138,9 +140,8 @@ struct HomeView: View {
 
     private var pausedView: some View {
         VStack(spacing: 20) {
-            Image(systemName: "moon.zzz.fill")
-                .font(.system(size: 60))
-                .foregroundStyle(Theme.warmGradient)
+            Text("🌙")
+                .font(.system(size: 80))
             Text("Recommendations Paused")
                 .font(Theme.title)
             Text("Enjoy your break! You can resume in Settings.")
@@ -154,9 +155,8 @@ struct HomeView: View {
 
     private var emptyView: some View {
         VStack(spacing: 20) {
-            Image(systemName: "calendar.badge.clock")
-                .font(.system(size: 60))
-                .foregroundStyle(Theme.warmGradient)
+            Text("☁️")
+                .font(.system(size: 80))
             Text("No Picks Today")
                 .font(Theme.title)
             Text("Check back on your next scheduled day, or adjust your schedule in Settings.")
@@ -170,10 +170,9 @@ struct HomeView: View {
 
     private var allDoneView: some View {
         VStack(spacing: 20) {
-            Image(systemName: "checkmark.circle.fill")
-                .font(.system(size: 60))
-                .foregroundStyle(.green)
-            Text("You're All Caught Up! 🎉")
+            Text("🎈")
+                .font(.system(size: 80))
+            Text("You're All Caught Up!")
                 .font(Theme.title)
             Text("Great job staying connected today.")
                 .font(Theme.body)
@@ -242,7 +241,9 @@ struct HomeView: View {
 struct SnoozeSheet: View {
     let contactName: String
     let onSnooze: (Date) -> Void
+    var onBlock: (() -> Void)? = nil
     @Environment(\.dismiss) private var dismiss
+    @State private var showBlockConfirmation = false
 
     let options: [(label: String, days: Int)] = [
         ("1 Week", 7),
@@ -284,6 +285,17 @@ struct SnoozeSheet: View {
                         }
                     }
                 }
+
+                Section {
+                    Button(role: .destructive) {
+                        showBlockConfirmation = true
+                    } label: {
+                        HStack {
+                            Image(systemName: "hand.raised.fill")
+                            Text("Block \(contactName)")
+                        }
+                    }
+                }
             }
             .navigationTitle("Snooze")
             .navigationBarTitleDisplayMode(.inline)
@@ -291,6 +303,18 @@ struct SnoozeSheet: View {
                 ToolbarItem(placement: .topBarLeading) {
                     Button("Cancel") { dismiss() }
                 }
+            }
+            .alert(
+                "Block \(contactName)?",
+                isPresented: $showBlockConfirmation
+            ) {
+                Button("Block", role: .destructive) {
+                    onBlock?()
+                    dismiss()
+                }
+                Button("Cancel", role: .cancel) {}
+            } message: {
+                Text("\(contactName) will no longer appear in your recommendations.")
             }
         }
     }

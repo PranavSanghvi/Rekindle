@@ -8,6 +8,8 @@ enum RecommendationStatus: String, Codable {
     case skipped    // User chose to skip
     case postponed  // Put back in pool for next time
     case expired    // Never acted on from a previous day
+    case snoozed    // Contact was snoozed
+    case blocked    // Contact was blocked
 }
 
 @Model

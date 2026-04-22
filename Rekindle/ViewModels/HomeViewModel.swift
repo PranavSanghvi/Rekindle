@@ -90,12 +90,30 @@ final class HomeViewModel {
         guard let modelContext else { return }
         do {
             try RecommendationEngine.snoozeContact(contact, until: date, modelContext: modelContext)
-            // Also mark the recommendation for this contact as skipped so the card updates
+            // Mark the card with the correct snoozed status
             if let rec = todayRecommendations.first(where: { $0.contact === contact && $0.status == .pending }) {
-                try RecommendationEngine.skip(rec, modelContext: modelContext)
+                rec.status = .snoozed
+                rec.actionDate = Date()
+                try modelContext.save()
             }
         } catch {
             errorMessage = "Failed to snooze: \(error.localizedDescription)"
+        }
+    }
+
+    func blockContact(_ contact: RekindleContact) {
+        guard let modelContext else { return }
+        contact.isBlocked = true
+        contact.snoozedUntil = nil
+        // Mark the card with the correct blocked status
+        if let rec = todayRecommendations.first(where: { $0.contact === contact && $0.status == .pending }) {
+            rec.status = .blocked
+            rec.actionDate = Date()
+        }
+        do {
+            try modelContext.save()
+        } catch {
+            errorMessage = "Failed to block: \(error.localizedDescription)"
         }
     }
 

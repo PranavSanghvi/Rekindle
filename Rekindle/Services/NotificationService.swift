@@ -36,11 +36,17 @@ final class NotificationService: ObservableObject {
 
     /// Schedule recurring notifications based on app settings
     func scheduleNotifications(settings: AppSettings) async {
-        // Cancel existing notifications first
-        center.removeAllPendingNotificationRequests()
-
         guard !settings.isCurrentlyPaused else { return }
-        guard isAuthorized else { return }
+
+        // Always check authorization fresh from the system to avoid race conditions
+        // with the async checkAuthorization() fired during init()
+        let currentSettings = await center.notificationSettings()
+        guard currentSettings.authorizationStatus == .authorized else { return }
+        isAuthorized = true
+
+        // Only remove existing notifications AFTER confirming we're authorized
+        // and about to reschedule — otherwise we silently wipe everything
+        center.removeAllPendingNotificationRequests()
 
         // Determine which days to schedule
         let scheduledDays: [Int]

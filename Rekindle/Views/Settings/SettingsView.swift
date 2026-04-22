@@ -31,7 +31,7 @@ struct SettingsView: View {
                     ProgressView()
                 }
             }
-            .background(Color(.systemGroupedBackground))
+            .background(Theme.dynamicAppBackground)
             .navigationTitle("Settings")
             .onAppear {
                 viewModel.setup(modelContext: modelContext)
@@ -56,7 +56,8 @@ struct SettingsView: View {
                         Text(preset.rawValue).tag(preset)
                     }
                 }
-
+                .font(Theme.body)
+                
                 if settings.schedulePreset == .custom {
                     ForEach(dayNames, id: \.0) { day in
                         Toggle(day.1, isOn: Binding(
@@ -72,6 +73,7 @@ struct SettingsView: View {
                                 saveAndReschedule(settings)
                             }
                         ))
+                        .font(Theme.body)
                     }
                 }
 
@@ -86,13 +88,15 @@ struct SettingsView: View {
                         },
                         set: { newDate in
                             let comps = Calendar.current.dateComponents([.hour, .minute], from: newDate)
-                            settings.notificationHour = comps.hour ?? 9
+                            settings.notificationHour = comps.hour ?? 10
                             settings.notificationMinute = comps.minute ?? 0
                             saveAndReschedule(settings)
                         }
                     ),
                     displayedComponents: .hourAndMinute
                 )
+                .font(Theme.body)
+                
             } header: {
                 Text("Schedule")
             } footer: {
@@ -112,6 +116,7 @@ struct SettingsView: View {
                     ),
                     in: 1...20
                 )
+                .font(Theme.body)
 
                 Picker("Cooldown Period", selection: Binding(
                     get: { settings.cooldownDays },
@@ -124,6 +129,8 @@ struct SettingsView: View {
                         Text(option.label).tag(option.days)
                     }
                 }
+                .font(Theme.body)
+                
             } header: {
                 Text("Recommendations")
             } footer: {
@@ -142,6 +149,7 @@ struct SettingsView: View {
                         saveAndReschedule(settings)
                     }
                 ))
+                .font(Theme.body)
 
                 if settings.isPaused {
                     Toggle("Auto-resume", isOn: Binding(
@@ -153,6 +161,7 @@ struct SettingsView: View {
                             viewModel.save()
                         }
                     ))
+                    .font(Theme.body)
 
                     if settings.pausedUntil != nil {
                         DatePicker(
@@ -167,6 +176,7 @@ struct SettingsView: View {
                             in: Date()...,
                             displayedComponents: .date
                         )
+                        .font(Theme.body)
                     }
                 }
             } header: {
@@ -179,8 +189,10 @@ struct SettingsView: View {
             Section {
                 HStack {
                     Text("Permission")
+                        .font(Theme.body)
                     Spacer()
                     Text(permissionStatusText)
+                        .font(Theme.body)
                         .foregroundStyle(.secondary)
                 }
 
@@ -193,6 +205,8 @@ struct SettingsView: View {
                         Image(systemName: "arrow.triangle.2.circlepath")
                         Text("Refresh Contacts")
                     }
+                    .font(Theme.body)
+                    .foregroundStyle(Theme.coral)
                 }
                 .disabled(contactService.authorizationStatus != .authorized || contactService.isImporting)
             } header: {
@@ -202,17 +216,26 @@ struct SettingsView: View {
             // MARK: - Notifications Section
             Section {
                 HStack {
-                    Text("Notifications")
+                    Text("Status")
+                        .font(Theme.body)
                     Spacer()
                     Text(notificationService.isAuthorized ? "Enabled" : "Disabled")
-                        .foregroundStyle(notificationService.isAuthorized ? .green : .red)
+                        .font(Theme.body)
+                        .foregroundStyle(notificationService.isAuthorized ? Theme.sageGreen : Theme.coral)
                 }
 
                 if !notificationService.isAuthorized {
-                    Button("Enable Notifications") {
+                    Button {
                         Task {
                             _ = await notificationService.requestAuthorization()
                         }
+                    } label: {
+                        HStack {
+                            Image(systemName: "bell.badge")
+                            Text("Enable Notifications")
+                        }
+                        .font(Theme.body)
+                        .foregroundStyle(Theme.coral)
                     }
                 }
             } header: {
@@ -223,14 +246,17 @@ struct SettingsView: View {
             Section {
                 HStack {
                     Text("Version")
+                        .font(Theme.body)
                     Spacer()
                     Text("1.0.0")
+                        .font(Theme.body)
                         .foregroundStyle(.secondary)
                 }
             } header: {
                 Text("About")
             }
         }
+        .scrollContentBackground(.hidden)
     }
 
     private var permissionStatusText: String {

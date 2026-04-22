@@ -72,7 +72,7 @@ struct RecommendationCardView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(
             RoundedRectangle(cornerRadius: Theme.cardCornerRadius, style: .continuous)
-                .fill(Color.green.gradient)
+                .fill(Theme.sageGreen.gradient)
         )
     }
 
@@ -160,9 +160,9 @@ struct RecommendationCardView: View {
     private var statusBadge: some View {
         HStack(spacing: 4) {
             Image(systemName: statusIcon)
-                .font(.caption2)
+                .font(.caption2.weight(.bold))
             Text(statusText)
-                .font(Theme.caption)
+                .font(.system(.caption, design: .rounded, weight: .bold))
         }
         .foregroundStyle(statusColor)
     }
@@ -229,6 +229,8 @@ struct RecommendationCardView: View {
         case .skipped: return "forward.fill"
         case .postponed: return "clock.arrow.circlepath"
         case .expired: return "exclamationmark.circle"
+        case .snoozed: return "moon.zzz.fill"
+        case .blocked: return "hand.raised.fill"
         case .pending: return "circle"
         }
     }
@@ -239,6 +241,8 @@ struct RecommendationCardView: View {
         case .skipped: return "Skipped"
         case .postponed: return "Postponed"
         case .expired: return "Missed"
+        case .snoozed: return "Snoozed"
+        case .blocked: return "Blocked"
         case .pending: return "Pending"
         }
     }
@@ -249,6 +253,8 @@ struct RecommendationCardView: View {
         case .skipped: return .secondary
         case .postponed: return Theme.postponed
         case .expired: return .orange
+        case .snoozed: return Theme.amber
+        case .blocked: return .red
         case .pending: return .primary
         }
     }
@@ -266,15 +272,15 @@ struct ActionButton: View {
         Button(action: action) {
             VStack(spacing: 6) {
                 Image(systemName: icon)
-                    .font(.title3)
+                    .font(.title3.weight(.medium))
                 Text(title)
-                    .font(.system(.caption2, design: .rounded, weight: .medium))
+                    .font(.system(.caption, design: .rounded, weight: .bold))
             }
             .foregroundStyle(color)
             .frame(maxWidth: .infinity)
-            .padding(.vertical, 10)
-            .background(color.opacity(0.1))
-            .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+            .padding(.vertical, 14)
+            .background(color.opacity(0.12))
+            .clipShape(Capsule())
         }
         .buttonStyle(.plain)
     }

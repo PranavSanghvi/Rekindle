@@ -3,6 +3,7 @@ import SwiftData
 
 struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.scenePhase) private var scenePhase
     @EnvironmentObject private var contactService: ContactService
     @EnvironmentObject private var notificationService: NotificationService
 
@@ -43,6 +44,13 @@ struct ContentView: View {
                 showOnboarding = true
             }
         }
+        .onChange(of: scenePhase) { _, newPhase in
+            if newPhase == .active && contactService.authorizationStatus == .authorized {
+                Task {
+                    try? await contactService.importContacts(modelContext: modelContext)
+                }
+            }
+        }
         .sheet(isPresented: $showOnboarding) {
             OnboardingView {
                 hasCompletedOnboarding = true
@@ -69,7 +77,7 @@ struct OnboardingView: View {
     @State private var currentPage = 0
     @State private var isImporting = false
 
-    private let totalPages = 7
+    private let totalPages = 3
 
     var body: some View {
         VStack(spacing: 0) {
@@ -77,10 +85,6 @@ struct OnboardingView: View {
                 welcomePage.tag(0)
                 contactsPage.tag(1)
                 notificationsPage.tag(2)
-                howItWorksPage.tag(3)
-                actionsPage.tag(4)
-                schedulePage.tag(5)
-                readyPage.tag(6)
             }
             .tabViewStyle(.page(indexDisplayMode: .never))
             .animation(Theme.springAnimation, value: currentPage)
@@ -97,6 +101,7 @@ struct OnboardingView: View {
             }
             .padding(.bottom, 20)
         }
+        .background(Theme.dynamicAppBackground)
         .interactiveDismissDisabled()
     }
 
@@ -106,9 +111,8 @@ struct OnboardingView: View {
         VStack(spacing: 24) {
             Spacer()
 
-            Image(systemName: "flame.fill")
+            Text("🔥")
                 .font(.system(size: 80))
-                .foregroundStyle(Theme.warmGradient)
 
             Text("Welcome to Rekindle")
                 .font(Theme.largeTitle)
@@ -130,7 +134,7 @@ struct OnboardingView: View {
                     Image(systemName: "arrow.right")
                 }
             }
-            .buttonStyle(GradientButtonStyle())
+            .buttonStyle(GradientPillButtonStyle())
             .padding(.bottom, 40)
         }
     }
@@ -141,14 +145,13 @@ struct OnboardingView: View {
         VStack(spacing: 24) {
             Spacer()
 
-            Image(systemName: "person.crop.circle.badge.plus")
-                .font(.system(size: 70))
-                .foregroundStyle(Theme.warmGradient)
+            Text("📇")
+                .font(.system(size: 80))
 
             Text("Import Your Contacts")
                 .font(Theme.title)
 
-            Text("We need access to your contacts to suggest people to reconnect with. We'll never modify or share them.")
+            Text("We request access to your contacts to suggest people to reconnect with. We'll never modify or share them.")
                 .font(Theme.body)
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
@@ -175,16 +178,10 @@ struct OnboardingView: View {
                         } else {
                             Image(systemName: "person.crop.circle.badge.checkmark")
                         }
-                        Text("Allow Access")
+                        Text("Continue")
                     }
                 }
-                .buttonStyle(GradientButtonStyle())
-
-                Button("Skip for Now") {
-                    withAnimation { currentPage = 2 }
-                }
-                .font(Theme.caption)
-                .foregroundStyle(.secondary)
+                .buttonStyle(GradientPillButtonStyle())
             }
             .padding(.bottom, 40)
         }
@@ -196,9 +193,8 @@ struct OnboardingView: View {
         VStack(spacing: 24) {
             Spacer()
 
-            Image(systemName: "bell.badge.fill")
-                .font(.system(size: 70))
-                .foregroundStyle(Theme.warmGradient)
+            Text("🔔")
+                .font(.system(size: 80))
 
             Text("Stay on Track")
                 .font(Theme.title)
@@ -215,216 +211,42 @@ struct OnboardingView: View {
                 Button {
                     Task {
                         _ = await notificationService.requestAuthorization()
-                        withAnimation { currentPage = 3 }
+                        
+                        // Immediately schedule the default notifications now that we have permission
+                        var descriptor = FetchDescriptor<AppSettings>()
+                        descriptor.fetchLimit = 1
+                        if let settings = try? modelContext.fetch(descriptor).first {
+                            await notificationService.scheduleNotifications(settings: settings)
+                            BackgroundTaskService.scheduleBackgroundRefresh(settings: settings)
+                            
+                            // Immediately queue up the personalized notification for today's recommendations
+                            // (If the time has passed, it will automatically schedule for tomorrow at the same time)
+                            let todayStart = Calendar.current.startOfDay(for: Date())
+                            let todayEnd = Calendar.current.date(byAdding: .day, value: 1, to: todayStart)!
+                            
+                            var recDescriptor = FetchDescriptor<Recommendation>(
+                                predicate: #Predicate<Recommendation> { rec in
+                                    rec.date >= todayStart && rec.date < todayEnd
+                                }
+                            )
+                            if let recs = try? modelContext.fetch(recDescriptor), !recs.isEmpty {
+                                let names = recs.compactMap { $0.contact?.firstName }
+                                await notificationService.schedulePersonalizedNotification(contactNames: names, settings: settings)
+                            }
+                        }
+
+                        withAnimation(Theme.springAnimation) {
+                            onComplete()
+                        }
                     }
                 } label: {
                     HStack {
                         Image(systemName: "bell.badge")
-                        Text("Enable Notifications")
+                        Text("Continue")
                     }
                 }
-                .buttonStyle(GradientButtonStyle())
-
-                Button("Skip for Now") {
-                    withAnimation { currentPage = 3 }
-                }
-                .font(Theme.caption)
-                .foregroundStyle(.secondary)
+                .buttonStyle(GradientPillButtonStyle())
             }
-            .padding(.bottom, 40)
-        }
-    }
-
-    // MARK: - Page 3: How It Works
-
-    private var howItWorksPage: some View {
-        VStack(spacing: 24) {
-            Spacer()
-
-            // Mock card illustration
-            VStack(spacing: 0) {
-                HStack(spacing: 12) {
-                    ZStack {
-                        Circle()
-                            .fill(Theme.coral.gradient)
-                            .frame(width: 44, height: 44)
-                        Text("SJ")
-                            .font(.system(size: 16, weight: .semibold, design: .rounded))
-                            .foregroundStyle(.white)
-                    }
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text("Sarah Johnson")
-                            .font(Theme.headline)
-                        Text("Haven't connected in a while")
-                            .font(Theme.caption)
-                            .foregroundStyle(.secondary)
-                    }
-                    Spacer()
-                    Image(systemName: "message.fill")
-                        .foregroundStyle(Theme.coral)
-                }
-                .padding(Theme.paddingMedium)
-            }
-            .background(Theme.cardBackground)
-            .clipShape(RoundedRectangle(cornerRadius: Theme.cardCornerRadius, style: .continuous))
-            .shadow(color: Theme.cardShadow, radius: 8, y: 4)
-            .padding(.horizontal, 40)
-
-            Text("How It Works")
-                .font(Theme.title)
-
-            Text("Each day, we randomly pick a few contacts for you to reconnect with. People you haven't reached out to in a while are more likely to be selected.")
-                .font(Theme.body)
-                .foregroundStyle(.secondary)
-                .multilineTextAlignment(.center)
-                .padding(.horizontal, 32)
-
-            Spacer()
-
-            nextButton(page: 4)
-                .padding(.bottom, 40)
-        }
-    }
-
-    // MARK: - Page 4: Your Actions
-
-    private var actionsPage: some View {
-        VStack(spacing: 20) {
-            Spacer()
-
-            Text("Your Actions")
-                .font(Theme.title)
-
-            Text("Here's what you can do with each pick:")
-                .font(Theme.body)
-                .foregroundStyle(.secondary)
-
-            VStack(alignment: .leading, spacing: 16) {
-                actionRow(
-                    icon: "hand.draw.fill",
-                    iconColor: Theme.done,
-                    title: "Swipe Right",
-                    description: "Mark as sent — the quickest way!"
-                )
-                actionRow(
-                    icon: "checkmark.circle.fill",
-                    iconColor: Theme.done,
-                    title: "Done",
-                    description: "I reached out! Starts the cooldown timer."
-                )
-                actionRow(
-                    icon: "message.fill",
-                    iconColor: Theme.coral,
-                    title: "Message",
-                    description: "Opens iMessage directly for that person."
-                )
-                actionRow(
-                    icon: "forward.fill",
-                    iconColor: .secondary,
-                    title: "Skip",
-                    description: "Not today — no cooldown, they stay in the pool."
-                )
-                actionRow(
-                    icon: "clock.arrow.circlepath",
-                    iconColor: Theme.postponed,
-                    title: "Postpone",
-                    description: "Maybe next time — back in the pool for the next cycle."
-                )
-                actionRow(
-                    icon: "moon.zzz.fill",
-                    iconColor: Theme.softTeal,
-                    title: "Snooze",
-                    description: "Hide this person for weeks or months."
-                )
-            }
-            .padding(.horizontal, 32)
-
-            Spacer()
-
-            nextButton(page: 5)
-                .padding(.bottom, 40)
-        }
-    }
-
-    // MARK: - Page 5: Customize Schedule
-
-    private var schedulePage: some View {
-        VStack(spacing: 24) {
-            Spacer()
-
-            Image(systemName: "slider.horizontal.3")
-                .font(.system(size: 70))
-                .foregroundStyle(Theme.warmGradient)
-
-            Text("Make It Yours")
-                .font(Theme.title)
-
-            VStack(alignment: .leading, spacing: 16) {
-                scheduleRow(
-                    icon: "calendar",
-                    title: "Frequency",
-                    detail: "Daily, weekdays, weekends, or custom days"
-                )
-                scheduleRow(
-                    icon: "person.2",
-                    title: "Contacts Per Day",
-                    detail: "Choose 1 to 20 picks per session"
-                )
-                scheduleRow(
-                    icon: "clock",
-                    title: "Notification Time",
-                    detail: "Pick the perfect time to be reminded"
-                )
-                scheduleRow(
-                    icon: "arrow.counterclockwise",
-                    title: "Cooldown",
-                    detail: "How long before someone is suggested again"
-                )
-            }
-            .padding(.horizontal, 32)
-
-            Text("You can adjust all of this in Settings anytime.")
-                .font(Theme.caption)
-                .foregroundStyle(.tertiary)
-
-            Spacer()
-
-            nextButton(page: 6)
-                .padding(.bottom, 40)
-        }
-    }
-
-    // MARK: - Page 6: Ready
-
-    private var readyPage: some View {
-        VStack(spacing: 24) {
-            Spacer()
-
-            Image(systemName: "checkmark.circle.fill")
-                .font(.system(size: 80))
-                .foregroundStyle(.green)
-
-            Text("You're All Set! 🎉")
-                .font(Theme.largeTitle)
-                .multilineTextAlignment(.center)
-
-            Text("Head to Settings to customize your schedule, then check Today for your first picks.")
-                .font(Theme.body)
-                .foregroundStyle(.secondary)
-                .multilineTextAlignment(.center)
-                .padding(.horizontal, 32)
-
-            Spacer()
-
-            Button {
-                onComplete()
-            } label: {
-                HStack {
-                    Image(systemName: "flame.fill")
-                    Text("Let's Go!")
-                }
-            }
-            .buttonStyle(GradientButtonStyle())
             .padding(.bottom, 40)
         }
     }
@@ -440,7 +262,7 @@ struct OnboardingView: View {
                 Image(systemName: "arrow.right")
             }
         }
-        .buttonStyle(GradientButtonStyle())
+        .buttonStyle(GradientPillButtonStyle())
     }
 
     private func actionRow(icon: String, iconColor: Color, title: String, description: String) -> some View {

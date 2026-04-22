@@ -7,6 +7,13 @@ struct ContactsListView: View {
     @EnvironmentObject private var contactService: ContactService
     @State private var showSnoozeSheet = false
     @State private var contactToSnooze: RekindleContact?
+    @State private var selectedFilter: ContactFilter = .active
+
+    enum ContactFilter: String, CaseIterable {
+        case active = "Active"
+        case snoozed = "Snoozed"
+        case blocked = "Blocked"
+    }
 
     var body: some View {
         NavigationStack {
@@ -21,7 +28,7 @@ struct ContactsListView: View {
                     contactsList
                 }
             }
-            .background(Color(.systemGroupedBackground))
+            .background(Theme.dynamicAppBackground)
             .navigationTitle("Contacts")
             .searchable(text: $viewModel.searchText, prompt: "Search contacts")
             .toolbar {
@@ -46,6 +53,8 @@ struct ContactsListView: View {
             .sheet(item: $contactToSnooze) { contact in
                 SnoozeSheet(contactName: contact.fullName) { date in
                     viewModel.snooze(contact, until: date)
+                } onBlock: {
+                    viewModel.toggleBlock(contact)
                 }
             }
         }
@@ -82,7 +91,7 @@ struct ContactsListView: View {
                     Text("Allow Access")
                 }
             }
-            .buttonStyle(GradientButtonStyle())
+            .buttonStyle(GradientPillButtonStyle())
 
             if contactService.authorizationStatus == .denied {
                 Text("You can enable access in Settings → Privacy → Contacts")
@@ -91,13 +100,13 @@ struct ContactsListView: View {
             }
         }
         .padding()
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
     private var noContactsView: some View {
         VStack(spacing: 20) {
-            Image(systemName: "person.2.slash")
-                .font(.system(size: 60))
-                .foregroundStyle(.secondary)
+            Text("📇")
+                .font(.system(size: 80))
             Text("No Contacts Found")
                 .font(Theme.title)
             Text("Tap the refresh button to import your contacts.")
@@ -105,43 +114,78 @@ struct ContactsListView: View {
                 .foregroundStyle(.secondary)
         }
         .padding()
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
-    // MARK: - Contacts List
+    // MARK: - Contacts List (Custom Setup)
 
     private var contactsList: some View {
-        List {
-            if !viewModel.activeContacts.isEmpty {
-                Section {
-                    ForEach(viewModel.activeContacts) { contact in
-                        contactRow(contact)
-                    }
-                } header: {
-                    Text("Active (\(viewModel.activeContacts.count))")
+        ScrollView {
+            // Filter tabs
+            Picker("Filter", selection: $selectedFilter) {
+                ForEach(ContactFilter.allCases, id: \.self) { filter in
+                    Text(filterLabel(filter)).tag(filter)
                 }
             }
+            .pickerStyle(.segmented)
+            .padding(.horizontal, Theme.paddingMedium)
+            .padding(.top, Theme.paddingMedium)
 
-            if !viewModel.snoozedContacts.isEmpty {
-                Section {
-                    ForEach(viewModel.snoozedContacts) { contact in
-                        contactRow(contact)
-                    }
-                } header: {
-                    Text("Snoozed (\(viewModel.snoozedContacts.count))")
+            LazyVStack(spacing: Theme.paddingLarge) {
+                let contacts = filteredContacts
+                if contacts.isEmpty {
+                    emptyFilterView
+                } else {
+                    contactSectionBody(contacts: contacts)
                 }
             }
+            .padding(.horizontal, Theme.paddingMedium)
+            .padding(.vertical, Theme.paddingLarge)
+        }
+    }
 
-            if !viewModel.blockedContacts.isEmpty {
-                Section {
-                    ForEach(viewModel.blockedContacts) { contact in
-                        contactRow(contact)
-                    }
-                } header: {
-                    Text("Blocked (\(viewModel.blockedContacts.count))")
+    private func filterLabel(_ filter: ContactFilter) -> String {
+        switch filter {
+        case .active: return "Active"
+        case .snoozed:
+            let count = viewModel.snoozedContacts.count
+            return count > 0 ? "Snoozed (\(count))" : "Snoozed"
+        case .blocked:
+            let count = viewModel.blockedContacts.count
+            return count > 0 ? "Blocked (\(count))" : "Blocked"
+        }
+    }
+
+    private var filteredContacts: [RekindleContact] {
+        switch selectedFilter {
+        case .active: return viewModel.activeContacts
+        case .snoozed: return viewModel.snoozedContacts
+        case .blocked: return viewModel.blockedContacts
+        }
+    }
+
+    private var emptyFilterView: some View {
+        VStack(spacing: 12) {
+            Text(selectedFilter == .snoozed ? "No snoozed contacts" : "No blocked contacts")
+                .font(Theme.body)
+                .foregroundStyle(.secondary)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.top, 60)
+    }
+
+    @ViewBuilder
+    private func contactSectionBody(contacts: [RekindleContact]) -> some View {
+        VStack(spacing: 0) {
+            ForEach(Array(contacts.enumerated()), id: \.element.id) { index, contact in
+                contactRow(contact)
+                if index != contacts.count - 1 {
+                    Divider()
+                        .padding(.leading, 64)
                 }
             }
         }
-        .listStyle(.insetGrouped)
+        .cardStyle()
     }
 
     private func contactRow(_ contact: RekindleContact) -> some View {
@@ -164,32 +208,61 @@ struct ContactsListView: View {
             }
 
             Spacer()
-        }
-        .swipeActions(edge: .trailing) {
-            if contact.isBlocked {
-                Button("Unblock") {
-                    viewModel.toggleBlock(contact)
+
+            // Ellipsis Menu replaces swipe actions
+            Menu {
+                if contact.isBlocked {
+                    Button("Unblock", role: .none) {
+                        // Workaround: delay slightly to let menu dismiss
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                            viewModel.toggleBlock(contact)
+                        }
+                    }
+                } else {
+                    Button("Block", role: .destructive) {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                            viewModel.toggleBlock(contact)
+                        }
+                    }
                 }
-                .tint(.green)
-            } else {
-                Button("Block") {
-                    viewModel.toggleBlock(contact)
+                
+                if !contact.isBlocked {
+                    if contact.isSnoozed {
+                        Button("Unsnooze", role: .none) {
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                viewModel.unsnooze(contact)
+                            }
+                        }
+                    } else {
+                        Button("Snooze...", role: .none) {
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                contactToSnooze = contact
+                            }
+                        }
+                    }
                 }
-                .tint(.red)
+            } label: {
+                Image(systemName: "ellipsis.circle.fill")
+                    .font(.title2)
+                    .foregroundStyle(.tertiary)
+                    .padding(.vertical, 8)
+                    .padding(.leading, 8)
             }
         }
-        .swipeActions(edge: .leading) {
+        .padding(.vertical, 12)
+        .padding(.horizontal, Theme.paddingMedium)
+        // Also allow long press on the row itself to bring up the same context menu
+        .contextMenu {
+            if contact.isBlocked {
+                Button("Unblock") { viewModel.toggleBlock(contact) }
+            } else {
+                Button("Block", role: .destructive) { viewModel.toggleBlock(contact) }
+            }
             if !contact.isBlocked {
                 if contact.isSnoozed {
-                    Button("Unsnooze") {
-                        viewModel.unsnooze(contact)
-                    }
-                    .tint(Theme.softTeal)
+                    Button("Unsnooze") { viewModel.unsnooze(contact) }
                 } else {
-                    Button("Snooze") {
-                        contactToSnooze = contact
-                    }
-                    .tint(Theme.amber)
+                    Button("Snooze...") { contactToSnooze = contact }
                 }
             }
         }

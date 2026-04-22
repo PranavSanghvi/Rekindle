@@ -52,6 +52,7 @@ struct RekindleApp: App {
                         settingsDescriptor.fetchLimit = 1
                         if let settings = try? context.fetch(settingsDescriptor).first {
                             BackgroundTaskService.scheduleBackgroundRefresh(settings: settings)
+                            await notificationService.scheduleNotifications(settings: settings)
                         }
                     }
                 }
