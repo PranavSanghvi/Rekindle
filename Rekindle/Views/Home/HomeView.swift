@@ -98,15 +98,11 @@ struct HomeView: View {
     // MARK: - Favorites Section
 
     private var favoritesSection: some View {
-        VStack(spacing: 12) {
-            HStack(spacing: 6) {
-                Image(systemName: "star.fill")
-                    .foregroundStyle(Theme.amber)
-                Text("Keep close")
-                    .font(Theme.headline)
-                Spacer()
-            }
-            .padding(.top, 8)
+        VStack(alignment: .leading, spacing: 12) {
+            Text("Keep close")
+                .font(Theme.headline)
+                .foregroundStyle(Theme.goldText)
+                .padding(.leading, 4)
 
             ForEach(viewModel.favoriteRecommendations) { rec in
                 RecommendationCardView(
@@ -122,6 +118,13 @@ struct HomeView: View {
                 )
             }
         }
+        .padding(Theme.paddingMedium)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(
+            RoundedRectangle(cornerRadius: Theme.cardCornerRadius, style: .continuous)
+                .fill(Theme.amber.opacity(0.18))
+        )
+        .padding(.top, 8)
     }
 
     // MARK: - Return from Messages Prompt

@@ -186,8 +186,7 @@ struct ContactsListView: View {
         switch filter {
         case .active: return "Active"
         case .favorites:
-            let count = viewModel.favoriteContacts.count
-            return count > 0 ? "⭐ \(count)" : "⭐"
+            return "Favorites"
         case .snoozed:
             let count = viewModel.snoozedContacts.count
             return count > 0 ? "Snoozed (\(count))" : "Snoozed"
