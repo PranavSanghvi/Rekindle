@@ -26,14 +26,20 @@ final class Recommendation {
     /// The contact being recommended
     var contact: RekindleContact?
 
+    /// Whether this is a favorite pick (separate channel from standard recommendations).
+    /// Stored on the rec so history and the right cooldown apply even if the contact is
+    /// later un-favorited.
+    var isFavorite: Bool = false
+
     var status: RecommendationStatus {
         get { RecommendationStatus(rawValue: statusRawValue) ?? .pending }
         set { statusRawValue = newValue.rawValue }
     }
 
-    init(contact: RekindleContact, date: Date = Date()) {
+    init(contact: RekindleContact, date: Date = Date(), isFavorite: Bool = false) {
         self.contact = contact
         self.date = date
+        self.isFavorite = isFavorite
         self.statusRawValue = RecommendationStatus.pending.rawValue
     }
 }

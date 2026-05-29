@@ -13,6 +13,10 @@ final class RekindleContact {
     /// Whether this contact is excluded from recommendations
     var isBlocked: Bool = false
 
+    /// Whether this contact is a favorite — surfaced on a short, recurring cadence
+    /// in addition to (and separate from) the standard recommendations.
+    var isFavorite: Bool = false
+
     /// If set, contact is temporarily excluded until this date
     var snoozedUntil: Date?
 

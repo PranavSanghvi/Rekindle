@@ -8,6 +8,11 @@ struct RecommendationCardView: View {
     let onText: () -> Void
     let onSnooze: () -> Void
 
+    /// Favorite mode: shows a Call button + "Remove from Favorites", hides Skip/Snooze.
+    var isFavorite: Bool = false
+    var onCall: (() -> Void)? = nil
+    var onRemove: (() -> Void)? = nil
+
     @State private var isExpanded = false
     @State private var dragOffset: CGFloat = 0
     @State private var showSwipeHint = false
@@ -139,6 +144,16 @@ struct RecommendationCardView: View {
             Spacer()
 
             if !isResolved {
+                // Favorites also get a quick Call button (if the contact has a number)
+                if isFavorite, contact?.phoneNumber != nil {
+                    Button(action: { onCall?() }) {
+                        Image(systemName: "phone.fill")
+                            .font(.title3)
+                            .foregroundStyle(Theme.sageGreen)
+                    }
+                    .buttonStyle(.plain)
+                }
+
                 // Quick message button — opens Messages directly
                 Button(action: onText) {
                     Image(systemName: "message.fill")
@@ -181,17 +196,20 @@ struct RecommendationCardView: View {
                     }
                 )
 
-                ActionButton(
-                    title: "Skip",
-                    icon: "forward.fill",
-                    color: .secondary,
-                    action: {
-                        withAnimation(Theme.springAnimation) {
-                            onSkip()
-                            isExpanded = false
+                // Skip isn't offered for favorites (you chose them on purpose)
+                if !isFavorite {
+                    ActionButton(
+                        title: "Skip",
+                        icon: "forward.fill",
+                        color: .secondary,
+                        action: {
+                            withAnimation(Theme.springAnimation) {
+                                onSkip()
+                                isExpanded = false
+                            }
                         }
-                    }
-                )
+                    )
+                }
 
                 ActionButton(
                     title: "Postpone",
@@ -206,16 +224,32 @@ struct RecommendationCardView: View {
                 )
             }
 
-            Button(action: onSnooze) {
-                HStack(spacing: 6) {
-                    Image(systemName: "moon.zzz")
-                        .font(.caption)
-                    Text("Snooze this person")
-                        .font(Theme.caption)
+            if isFavorite {
+                Button(action: {
+                    withAnimation(Theme.springAnimation) { isExpanded = false }
+                    onRemove?()
+                }) {
+                    HStack(spacing: 6) {
+                        Image(systemName: "star.slash")
+                            .font(.caption)
+                        Text("Remove from Favorites")
+                            .font(Theme.caption)
+                    }
+                    .foregroundStyle(.red)
                 }
-                .foregroundStyle(.secondary)
+                .buttonStyle(.plain)
+            } else {
+                Button(action: onSnooze) {
+                    HStack(spacing: 6) {
+                        Image(systemName: "moon.zzz")
+                            .font(.caption)
+                        Text("Snooze this person")
+                            .font(Theme.caption)
+                    }
+                    .foregroundStyle(.secondary)
+                }
+                .buttonStyle(.plain)
             }
-            .buttonStyle(.plain)
         }
         .padding(.horizontal, Theme.paddingMedium)
         .padding(.vertical, 14)

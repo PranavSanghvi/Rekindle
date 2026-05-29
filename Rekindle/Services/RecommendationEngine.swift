@@ -20,9 +20,10 @@ struct RecommendationEngine {
         let todayStart = Calendar.current.startOfDay(for: Date())
         let todayEnd = Calendar.current.date(byAdding: .day, value: 1, to: todayStart)!
 
+        // Only consider STANDARD recs here — favorites are a separate channel.
         var existingDescriptor = FetchDescriptor<Recommendation>(
             predicate: #Predicate<Recommendation> { rec in
-                rec.date >= todayStart && rec.date < todayEnd
+                rec.date >= todayStart && rec.date < todayEnd && rec.isFavorite == false
             }
         )
         existingDescriptor.fetchLimit = 1
@@ -39,6 +40,9 @@ struct RecommendationEngine {
         let eligibleContacts = allContacts.filter { contact in
             // Must not be blocked
             guard !contact.isBlocked else { return false }
+
+            // Favorites are surfaced via the favorites channel only
+            guard !contact.isFavorite else { return false }
 
             // Must not be snoozed
             if let snoozedUntil = contact.snoozedUntil, snoozedUntil > now {
@@ -104,6 +108,7 @@ struct RecommendationEngine {
 
         let eligibleContacts = allContacts.filter { contact in
             guard !contact.isBlocked else { return false }
+            guard !contact.isFavorite else { return false } // favorites use their own channel
             if let snoozedUntil = contact.snoozedUntil, snoozedUntil > now { return false }
             if let lastContacted = contact.lastContactedDate {
                 if now.timeIntervalSince(lastContacted) < cooldownInterval { return false }
@@ -130,6 +135,69 @@ struct RecommendationEngine {
 
         try modelContext.save()
         return recommendations
+    }
+
+    // MARK: - Favorites
+
+    /// Generate today's favorite picks — a separate, short-cadence channel that runs
+    /// independently of the weekday schedule (but still respects the global pause).
+    @MainActor
+    static func generateFavoriteRecommendations(
+        modelContext: ModelContext,
+        settings: AppSettings
+    ) throws -> [Recommendation] {
+        guard settings.favoritesEnabled else { return [] }
+        guard !settings.isCurrentlyPaused else { return [] }
+
+        let todayStart = Calendar.current.startOfDay(for: Date())
+        let todayEnd = Calendar.current.date(byAdding: .day, value: 1, to: todayStart)!
+
+        // Already generated favorites for today?
+        var existingDescriptor = FetchDescriptor<Recommendation>(
+            predicate: #Predicate<Recommendation> { rec in
+                rec.date >= todayStart && rec.date < todayEnd && rec.isFavorite == true
+            }
+        )
+        existingDescriptor.fetchLimit = 1
+        if try !modelContext.fetch(existingDescriptor).isEmpty { return [] }
+
+        let allContacts = try modelContext.fetch(FetchDescriptor<RekindleContact>())
+        let now = Date()
+        let cooldownInterval = TimeInterval(settings.favoriteCooldownDays * 86400)
+
+        let eligible = allContacts.filter { contact in
+            guard contact.isFavorite, !contact.isBlocked else { return false }
+            if let snoozedUntil = contact.snoozedUntil, snoozedUntil > now { return false }
+            if let lastContacted = contact.lastContactedDate {
+                if now.timeIntervalSince(lastContacted) < cooldownInterval { return false }
+            }
+            return true
+        }
+
+        guard !eligible.isEmpty else { return [] }
+
+        let selected = weightedRandomSample(
+            from: eligible,
+            count: min(settings.favoritesPerSession, eligible.count)
+        )
+
+        var recommendations: [Recommendation] = []
+        for contact in selected {
+            let rec = Recommendation(contact: contact, date: now, isFavorite: true)
+            contact.lastRecommendedDate = now
+            modelContext.insert(rec)
+            recommendations.append(rec)
+        }
+
+        try modelContext.save()
+        return recommendations
+    }
+
+    /// Remove a contact from favorites.
+    @MainActor
+    static func removeFavorite(_ contact: RekindleContact, modelContext: ModelContext) throws {
+        contact.isFavorite = false
+        try modelContext.save()
     }
 
     /// Weighted random sample — contacts not reached out to in longer get higher weight
@@ -209,13 +277,16 @@ struct RecommendationEngine {
 
             for rec in todays {
                 guard let id = rec.contact?.contactIdentifier else { continue }
-                guard let existing = kept[id] else {
-                    kept[id] = rec
+                // Key by (contact, channel) so a standard pick and a favorite pick for the
+                // same contact on the same day are kept independently.
+                let key = "\(rec.isFavorite ? "f" : "s"):\(id)"
+                guard let existing = kept[key] else {
+                    kept[key] = rec
                     continue
                 }
                 // Prefer a recommendation the user has already acted on so we never drop their action.
                 if rec.actionDate != nil && existing.actionDate == nil {
-                    kept[id] = rec
+                    kept[key] = rec
                     toDelete.append(existing)
                 } else {
                     toDelete.append(rec)

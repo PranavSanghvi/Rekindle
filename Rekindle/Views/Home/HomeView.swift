@@ -6,6 +6,7 @@ struct HomeView: View {
     @Environment(\.scenePhase) private var scenePhase
     @State private var viewModel = HomeViewModel()
     @Query private var settingsArray: [AppSettings]
+    @State private var favoriteToRemove: RekindleContact?
 
     private var settings: AppSettings? { settingsArray.first }
 
@@ -15,14 +16,23 @@ struct HomeView: View {
                 VStack(spacing: Theme.paddingMedium) {
                     if viewModel.isLoading {
                         loadingView
-                    } else if settings?.isCurrentlyPaused == true {
-                        pausedView
-                    } else if viewModel.todayRecommendations.isEmpty {
-                        emptyView
-                    } else if viewModel.allResolved {
-                        allDoneView
                     } else {
-                        recommendationsView
+                        // Standard picks
+                        if settings?.isCurrentlyPaused == true {
+                            pausedView
+                        } else if viewModel.todayRecommendations.isEmpty {
+                            emptyView
+                        } else if viewModel.allResolved {
+                            allDoneView
+                        } else {
+                            recommendationsView
+                        }
+
+                        // Favorites — always shown (when opted in & populated), in addition
+                        // to standard picks and regardless of how many standard picks remain.
+                        if !viewModel.favoriteRecommendations.isEmpty {
+                            favoritesSection
+                        }
                     }
                 }
                 .padding(.horizontal, Theme.paddingMedium)
@@ -65,6 +75,51 @@ struct HomeView: View {
                 if viewModel.showReturnPrompt {
                     returnPromptOverlay
                 }
+            }
+            .alert(
+                "Remove from Favorites?",
+                isPresented: Binding(
+                    get: { favoriteToRemove != nil },
+                    set: { if !$0 { favoriteToRemove = nil } }
+                ),
+                presenting: favoriteToRemove
+            ) { contact in
+                Button("Remove", role: .destructive) {
+                    viewModel.removeFavorite(contact)
+                    favoriteToRemove = nil
+                }
+                Button("Cancel", role: .cancel) { favoriteToRemove = nil }
+            } message: { contact in
+                Text("\(contact.fullName) will no longer appear in your favorites.")
+            }
+        }
+    }
+
+    // MARK: - Favorites Section
+
+    private var favoritesSection: some View {
+        VStack(spacing: 12) {
+            HStack(spacing: 6) {
+                Image(systemName: "star.fill")
+                    .foregroundStyle(Theme.amber)
+                Text("Keep close")
+                    .font(Theme.headline)
+                Spacer()
+            }
+            .padding(.top, 8)
+
+            ForEach(viewModel.favoriteRecommendations) { rec in
+                RecommendationCardView(
+                    recommendation: rec,
+                    onDone: { viewModel.markDone(rec) },
+                    onSkip: {},
+                    onPostpone: { viewModel.postpone(rec) },
+                    onText: { viewModel.openMessages(for: rec) },
+                    onSnooze: {},
+                    isFavorite: true,
+                    onCall: { viewModel.call(for: rec) },
+                    onRemove: { favoriteToRemove = rec.contact }
+                )
             }
         }
     }
