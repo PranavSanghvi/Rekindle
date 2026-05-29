@@ -182,6 +182,55 @@ struct RecommendationEngine {
         return selected
     }
 
+    /// Remove duplicate recommendations for the same contact on the same day.
+    ///
+    /// The widget can seed today's recommendations on first load (before the app or background
+    /// task has run). If the widget and the app both observe an empty day at the same instant,
+    /// a cross-process race can insert two sets of recommendations. This self-heals that: it keeps
+    /// one recommendation per contact for today — preferring any the user has already acted on —
+    /// and deletes the rest. Safe to call repeatedly; runs only in the app and background task
+    /// (single-writer contexts that never execute concurrently).
+    @MainActor
+    static func deduplicateTodayRecommendations(modelContext: ModelContext) {
+        let todayStart = Calendar.current.startOfDay(for: Date())
+        let todayEnd = Calendar.current.date(byAdding: .day, value: 1, to: todayStart)!
+
+        do {
+            let descriptor = FetchDescriptor<Recommendation>(
+                predicate: #Predicate<Recommendation> { rec in
+                    rec.date >= todayStart && rec.date < todayEnd
+                },
+                sortBy: [SortDescriptor(\.date)]
+            )
+            let todays = try modelContext.fetch(descriptor)
+
+            var kept: [String: Recommendation] = [:]
+            var toDelete: [Recommendation] = []
+
+            for rec in todays {
+                guard let id = rec.contact?.contactIdentifier else { continue }
+                guard let existing = kept[id] else {
+                    kept[id] = rec
+                    continue
+                }
+                // Prefer a recommendation the user has already acted on so we never drop their action.
+                if rec.actionDate != nil && existing.actionDate == nil {
+                    kept[id] = rec
+                    toDelete.append(existing)
+                } else {
+                    toDelete.append(rec)
+                }
+            }
+
+            if !toDelete.isEmpty {
+                for rec in toDelete { modelContext.delete(rec) }
+                try modelContext.save()
+            }
+        } catch {
+            print("Failed to deduplicate recommendations: \(error)")
+        }
+    }
+
     // MARK: - Actions
 
     /// Mark a recommendation as done — starts cooldown

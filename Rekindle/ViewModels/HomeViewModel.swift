@@ -1,6 +1,7 @@
 import Foundation
 import SwiftData
 import SwiftUI
+import WidgetKit
 
 /// ViewModel for the Home tab — manages today's recommendations
 @MainActor
@@ -30,6 +31,9 @@ final class HomeViewModel {
         defer { isLoading = false }
 
         do {
+            // Clean up any duplicate recs a widget/app generation race may have created.
+            RecommendationEngine.deduplicateTodayRecommendations(modelContext: modelContext)
+
             let todayStart = Calendar.current.startOfDay(for: Date())
             let todayEnd = Calendar.current.date(byAdding: .day, value: 1, to: todayStart)!
 
@@ -49,6 +53,7 @@ final class HomeViewModel {
                     settings: settings
                 )
                 todayRecommendations = newRecs
+                WidgetCenter.shared.reloadAllTimelines()
             } else {
                 todayRecommendations = existing
             }
@@ -63,6 +68,7 @@ final class HomeViewModel {
         guard let modelContext else { return }
         do {
             try RecommendationEngine.markDone(recommendation, modelContext: modelContext)
+            WidgetCenter.shared.reloadAllTimelines()
         } catch {
             errorMessage = "Failed to update: \(error.localizedDescription)"
         }
@@ -72,6 +78,7 @@ final class HomeViewModel {
         guard let modelContext else { return }
         do {
             try RecommendationEngine.skip(recommendation, modelContext: modelContext)
+            WidgetCenter.shared.reloadAllTimelines()
         } catch {
             errorMessage = "Failed to update: \(error.localizedDescription)"
         }
@@ -81,6 +88,7 @@ final class HomeViewModel {
         guard let modelContext else { return }
         do {
             try RecommendationEngine.postpone(recommendation, modelContext: modelContext)
+            WidgetCenter.shared.reloadAllTimelines()
         } catch {
             errorMessage = "Failed to update: \(error.localizedDescription)"
         }
@@ -96,6 +104,7 @@ final class HomeViewModel {
                 rec.actionDate = Date()
                 try modelContext.save()
             }
+            WidgetCenter.shared.reloadAllTimelines()
         } catch {
             errorMessage = "Failed to snooze: \(error.localizedDescription)"
         }
@@ -112,6 +121,7 @@ final class HomeViewModel {
         }
         do {
             try modelContext.save()
+            WidgetCenter.shared.reloadAllTimelines()
         } catch {
             errorMessage = "Failed to block: \(error.localizedDescription)"
         }
@@ -162,6 +172,7 @@ final class HomeViewModel {
                 settings: settings
             )
             todayRecommendations.append(contentsOf: newRecs)
+            WidgetCenter.shared.reloadAllTimelines()
         } catch {
             errorMessage = "Failed to get more picks: \(error.localizedDescription)"
         }
