@@ -9,8 +9,6 @@ struct Theme {
     static let coral = Color(red: 0.98, green: 0.52, blue: 0.52)       // #FA8585
     static let warmOrange = Color(red: 0.98, green: 0.65, blue: 0.45)  // #FA9A72
     static let amber = Color(red: 1.0, green: 0.78, blue: 0.40)        // #FFC766
-    /// Deeper gold for readable text/labels on a pale amber tint
-    static let goldText = Color(red: 0.70, green: 0.50, blue: 0.12)    // #B38020
     static let softTeal = Color(red: 0.40, green: 0.82, blue: 0.80)    // #66D1CC
     static let sageGreen = Color(red: 0.55, green: 0.76, blue: 0.62)   // #8CBF9E
     static let dustyBlue = Color(red: 0.52, green: 0.68, blue: 0.88)   // #85ADE0

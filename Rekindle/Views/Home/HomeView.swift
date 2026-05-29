@@ -28,10 +28,16 @@ struct HomeView: View {
                             recommendationsView
                         }
 
-                        // Favorites — always shown (when opted in & populated), in addition
-                        // to standard picks and regardless of how many standard picks remain.
+                        // Favorites sit just below the standard picks and above
+                        // "Get More Picks" — so any newly added pick appears above this section.
                         if !viewModel.favoriteRecommendations.isEmpty {
                             favoritesSection
+                        }
+
+                        // Get More Picks — only when there are standard picks today and not paused
+                        if settings?.isCurrentlyPaused != true && !viewModel.todayRecommendations.isEmpty {
+                            morePicksButton
+                                .padding(.top, 4)
                         }
                     }
                 }
@@ -98,12 +104,7 @@ struct HomeView: View {
     // MARK: - Favorites Section
 
     private var favoritesSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text("Keep close")
-                .font(Theme.headline)
-                .foregroundStyle(Theme.goldText)
-                .padding(.leading, 4)
-
+        VStack(spacing: 12) {
             ForEach(viewModel.favoriteRecommendations) { rec in
                 RecommendationCardView(
                     recommendation: rec,
@@ -118,13 +119,19 @@ struct HomeView: View {
                 )
             }
         }
-        .padding(Theme.paddingMedium)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background(
-            RoundedRectangle(cornerRadius: Theme.cardCornerRadius, style: .continuous)
-                .fill(Theme.amber.opacity(0.18))
-        )
-        .padding(.top, 8)
+        // Gold "Keep close" tab tucked onto the top-left of the first favorite card
+        .overlay(alignment: .topLeading) {
+            Text("KEEP CLOSE")
+                .font(.system(size: 11, weight: .bold, design: .rounded))
+                .foregroundStyle(.white)
+                .padding(.horizontal, 14)
+                .padding(.vertical, 6)
+                .background(Theme.amber)
+                .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+                .padding(.leading, 16)
+                .offset(y: -12)
+        }
+        .padding(.top, 18)
     }
 
     // MARK: - Return from Messages Prompt
@@ -239,8 +246,6 @@ struct HomeView: View {
             Text("Great job staying connected today.")
                 .font(Theme.body)
                 .foregroundStyle(.secondary)
-
-            morePicksButton
         }
         .frame(maxWidth: .infinity, minHeight: 300)
         .padding(.top, 60)
@@ -264,9 +269,6 @@ struct HomeView: View {
                     }
                 )
             }
-
-            morePicksButton
-                .padding(.top, 8)
         }
     }
 
