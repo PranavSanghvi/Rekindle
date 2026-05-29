@@ -8,17 +8,37 @@ struct RekindleApp: App {
     @StateObject private var notificationService = NotificationService()
 
     var sharedModelContainer: ModelContainer = {
-        let schema = Schema([
-            RekindleContact.self,
-            Recommendation.self,
-            AppSettings.self,
-        ])
-        let modelConfiguration = ModelConfiguration(
-            schema: schema,
-            isStoredInMemoryOnly: false
-        )
+        let fileManager = FileManager.default
+
+        // Migrate old database to App Group container if needed (one-time for existing users).
+        // If the App Group is unavailable (missing/misspelled entitlement), skip migration —
+        // SharedModelContainer.create() below surfaces a clear typed error instead of crashing here.
+        if let appGroupURL = fileManager
+            .containerURL(forSecurityApplicationGroupIdentifier: SharedModelContainer.appGroupIdentifier) {
+            let newStoreURL = appGroupURL.appendingPathComponent("Rekindle.store")
+
+            if !fileManager.fileExists(atPath: newStoreURL.path) {
+                // Check for old database in the default SwiftData location
+                if let appSupportURL = fileManager.urls(for: .applicationSupportDirectory, in: .userDomainMask).first {
+                    let oldStoreURL = appSupportURL.appendingPathComponent("default.store")
+                    if fileManager.fileExists(atPath: oldStoreURL.path) {
+                        try? fileManager.copyItem(at: oldStoreURL, to: newStoreURL)
+                        // Also copy WAL and SHM files if they exist
+                        let walURL = oldStoreURL.appendingPathExtension("wal")
+                        let shmURL = oldStoreURL.appendingPathExtension("shm")
+                        if fileManager.fileExists(atPath: walURL.path) {
+                            try? fileManager.copyItem(at: walURL, to: newStoreURL.appendingPathExtension("wal"))
+                        }
+                        if fileManager.fileExists(atPath: shmURL.path) {
+                            try? fileManager.copyItem(at: shmURL, to: newStoreURL.appendingPathExtension("shm"))
+                        }
+                    }
+                }
+            }
+        }
+
         do {
-            return try ModelContainer(for: schema, configurations: [modelConfiguration])
+            return try SharedModelContainer.create()
         } catch {
             fatalError("Could not create ModelContainer: \(error)")
         }
@@ -34,6 +54,7 @@ struct RekindleApp: App {
             ContentView()
                 .environmentObject(contactService)
                 .environmentObject(notificationService)
+                .preferredColorScheme(.light)
                 .onAppear {
                     // Ensure AppSettings singleton exists
                     let context = sharedModelContainer.mainContext

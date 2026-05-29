@@ -2,12 +2,22 @@ import Foundation
 import BackgroundTasks
 import SwiftData
 import UserNotifications
+import WidgetKit
 
 /// Manages background app refresh tasks for generating recommendations
 @MainActor
 final class BackgroundTaskService {
 
     static let taskIdentifier = "com.rekindle.app.generateRecommendations"
+
+    /// The hour/minute to pre-generate recommendations: 15 minutes before the notification time.
+    /// Borrows from the hour (and wraps across midnight) so e.g. 10:05 → 09:50 and 00:05 → 23:50,
+    /// rather than clamping the minute to 0.
+    private static func refreshTime(for settings: AppSettings) -> (hour: Int, minute: Int) {
+        let total = settings.notificationHour * 60 + settings.notificationMinute - 15
+        let normalized = ((total % 1440) + 1440) % 1440
+        return (normalized / 60, normalized % 60)
+    }
 
     /// Register the background task with the system
     static func register() {
@@ -34,9 +44,10 @@ final class BackgroundTaskService {
 
         // Schedule for 15 minutes before notification time
         let calendar = Calendar.current
+        let refresh = refreshTime(for: settings)
         var targetComponents = DateComponents()
-        targetComponents.hour = settings.notificationHour
-        targetComponents.minute = max(0, settings.notificationMinute - 15)
+        targetComponents.hour = refresh.hour
+        targetComponents.minute = refresh.minute
 
         // Find the next scheduled day's time
         guard let nextDate = calendar.nextDate(
@@ -74,9 +85,10 @@ final class BackgroundTaskService {
             let weekday = calendar.component(.weekday, from: checkDate)
 
             if settings.isDayScheduled(weekday) {
+                let refresh = refreshTime(for: settings)
                 var targetComponents = calendar.dateComponents([.year, .month, .day], from: checkDate)
-                targetComponents.hour = settings.notificationHour
-                targetComponents.minute = max(0, settings.notificationMinute - 15)
+                targetComponents.hour = refresh.hour
+                targetComponents.minute = refresh.minute
 
                 guard let targetDate = calendar.date(from: targetComponents) else { continue }
 
@@ -95,15 +107,9 @@ final class BackgroundTaskService {
 
     /// Handle the background refresh — generate recommendations + personalized notification
     private static func handleBackgroundRefresh(_ task: BGAppRefreshTask) async {
-        // Create a fresh model context for background work
+        // Create a fresh model context backed by the shared App Group store
         do {
-            let schema = Schema([
-                RekindleContact.self,
-                Recommendation.self,
-                AppSettings.self,
-            ])
-            let config = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
-            let container = try ModelContainer(for: schema, configurations: [config])
+            let container = try SharedModelContainer.create()
             let context = ModelContext(container)
 
             // Fetch settings
@@ -117,19 +123,39 @@ final class BackgroundTaskService {
             // 1. Expire old pending recommendations
             expireOldRecommendations(modelContext: context)
 
-            // 2. Generate today's recommendations
-            let recommendations = try RecommendationEngine.generateRecommendations(
+            // 1b. Clean up any duplicate recs a widget/app generation race may have created
+            RecommendationEngine.deduplicateTodayRecommendations(modelContext: context)
+
+            // 2. Ensure today's recommendations exist (no-op if the widget/app already seeded them)
+            _ = try RecommendationEngine.generateRecommendations(
                 modelContext: context,
                 settings: settings
             )
 
-            // 3. Schedule personalized notification with names
-            if !recommendations.isEmpty {
-                let names = recommendations.compactMap { $0.contact?.firstName }
-                await schedulePersonalizedNotification(names: names, settings: settings)
+            // 3. Schedule personalized notification with names.
+            // Personalize from ALL of today's still-pending recs — whether this task generated
+            // them or the widget/app seeded them first — so widget pre-seeding can't suppress
+            // personalization. Reuses the weekday notification identifier so it REPLACES the
+            // generic one for that day rather than firing a second notification at the same time.
+            let todayStart = Calendar.current.startOfDay(for: Date())
+            let todayEnd = Calendar.current.date(byAdding: .day, value: 1, to: todayStart)!
+            let pendingRaw = RecommendationStatus.pending.rawValue
+            let todayDescriptor = FetchDescriptor<Recommendation>(
+                predicate: #Predicate<Recommendation> { rec in
+                    rec.date >= todayStart && rec.date < todayEnd && rec.statusRawValue == pendingRaw
+                },
+                sortBy: [SortDescriptor(\.date)]
+            )
+            let todaysPending = (try? context.fetch(todayDescriptor)) ?? []
+            if !todaysPending.isEmpty {
+                let names = todaysPending.compactMap { $0.contact?.firstName }
+                await NotificationService.schedulePersonalized(names: names, settings: settings)
             }
 
-            // 4. Schedule next background refresh
+            // 4. Refresh the widget
+            WidgetCenter.shared.reloadAllTimelines()
+
+            // 5. Schedule next background refresh
             scheduleBackgroundRefresh(settings: settings)
 
             task.setTaskCompleted(success: true)
@@ -163,61 +189,4 @@ final class BackgroundTaskService {
         }
     }
 
-    /// Schedule a personalized notification with contact names
-    private static func schedulePersonalizedNotification(
-        names: [String],
-        settings: AppSettings
-    ) async {
-        let center = UNUserNotificationCenter.current()
-        let authSettings = await center.notificationSettings()
-        guard authSettings.authorizationStatus == .authorized else { return }
-
-        let content = UNMutableNotificationContent()
-        content.title = "Rekindle 🔥"
-
-        if names.count == 1 {
-            content.body = "\(names[0]) — time to reconnect! 👋"
-        } else {
-            let others = names.count - 1
-            content.body = "\(names[0]) and \(others) other\(others == 1 ? "" : "s") — time to reconnect! 👋"
-        }
-        content.sound = .default
-
-        // Schedule for the notification time
-        var dateComponents = DateComponents()
-        dateComponents.hour = settings.notificationHour
-        dateComponents.minute = settings.notificationMinute
-
-        let calendar = Calendar.current
-        guard let targetDate = calendar.nextDate(
-            after: Date(),
-            matching: dateComponents,
-            matchingPolicy: .nextTime
-        ) else { return }
-
-        let trigger = UNCalendarNotificationTrigger(
-            dateMatching: calendar.dateComponents(
-                [.year, .month, .day, .hour, .minute],
-                from: targetDate
-            ),
-            repeats: false
-        )
-
-        // Remove existing personalized notification
-        center.removePendingNotificationRequests(
-            withIdentifiers: ["rekindle_personalized_today"]
-        )
-
-        let request = UNNotificationRequest(
-            identifier: "rekindle_personalized_today",
-            content: content,
-            trigger: trigger
-        )
-
-        do {
-            try await center.add(request)
-        } catch {
-            print("Failed to schedule personalized notification: \(error)")
-        }
-    }
 }

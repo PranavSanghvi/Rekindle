@@ -48,6 +48,10 @@ struct HomeView: View {
             .onChange(of: scenePhase) { _, newPhase in
                 if newPhase == .active {
                     viewModel.handleReturnFromBackground()
+                    // Reload recommendations to pick up widget changes or post-onboarding generation
+                    if let settings {
+                        viewModel.loadToday(settings: settings)
+                    }
                 }
             }
             .sheet(item: $viewModel.showSnoozeFor) { contact in

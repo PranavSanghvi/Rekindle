@@ -92,51 +92,79 @@ final class NotificationService: ObservableObject {
         }
     }
 
-    /// Update notification content with actual contact names
+    /// Update notification content with actual contact names.
     func schedulePersonalizedNotification(
         contactNames: [String],
         settings: AppSettings
     ) async {
-        guard isAuthorized else { return }
-
-        // Remove any existing personalized notification
-        center.removePendingNotificationRequests(
-            withIdentifiers: ["rekindle_personalized_today"]
+        await NotificationService.schedulePersonalized(
+            names: contactNames,
+            settings: settings,
+            center: center
         )
+    }
 
-        guard !contactNames.isEmpty else { return }
+    /// Schedule (or replace) the personalized notification for its target day.
+    ///
+    /// To avoid firing two notifications at the same time, this reuses the SAME identifier as
+    /// that weekday's recurring notification (`rekindle_day_N`). Adding a request with an existing
+    /// identifier replaces it, so there is only ever ONE notification per weekday slot —
+    /// personalized when names are available, generic otherwise. It repeats weekly to preserve
+    /// cadence if the app isn't reopened; the next app launch (which resets to generic) or
+    /// background run refreshes the content. Shared by the app and the background task.
+    static func schedulePersonalized(
+        names: [String],
+        settings: AppSettings,
+        center: UNUserNotificationCenter = .current()
+    ) async {
+        guard !names.isEmpty else { return }
+        guard !settings.isCurrentlyPaused else { return }
+
+        // Always check authorization fresh from the system.
+        let authSettings = await center.notificationSettings()
+        guard authSettings.authorizationStatus == .authorized else { return }
+
+        var timeComponents = DateComponents()
+        timeComponents.hour = settings.notificationHour
+        timeComponents.minute = settings.notificationMinute
+
+        let calendar = Calendar.current
+        guard let targetDate = calendar.nextDate(
+            after: Date(),
+            matching: timeComponents,
+            matchingPolicy: .nextTime
+        ) else { return }
+
+        // Only override a day we actually notify on.
+        let weekday = calendar.component(.weekday, from: targetDate)
+        guard settings.isDayScheduled(weekday) else { return }
 
         let content = UNMutableNotificationContent()
         content.title = "Rekindle 🔥"
-
-        if contactNames.count == 1 {
-            content.body = "\(contactNames[0]) — time to reconnect! 👋"
+        if names.count == 1 {
+            content.body = "\(names[0]) — time to reconnect! 👋"
         } else {
-            let others = contactNames.count - 1
-            content.body = "\(contactNames[0]) and \(others) other\(others == 1 ? "" : "s") — time to reconnect! 👋"
+            let others = names.count - 1
+            content.body = "\(names[0]) and \(others) other\(others == 1 ? "" : "s") — time to reconnect! 👋"
         }
         content.sound = .default
 
-        // Schedule for the set time today if it hasn't passed, otherwise tomorrow
-        var dateComponents = DateComponents()
-        dateComponents.hour = settings.notificationHour
-        dateComponents.minute = settings.notificationMinute
+        // Same weekly trigger as the generic notification, but personalized content.
+        var triggerComponents = DateComponents()
+        triggerComponents.weekday = weekday
+        triggerComponents.hour = settings.notificationHour
+        triggerComponents.minute = settings.notificationMinute
+        let trigger = UNCalendarNotificationTrigger(dateMatching: triggerComponents, repeats: true)
 
-        let now = Date()
-        let calendar = Calendar.current
-        let targetDate = calendar.nextDate(
-            after: now,
-            matching: dateComponents,
-            matchingPolicy: .nextTime
-        ) ?? now
-
-        let trigger = UNCalendarNotificationTrigger(
-            dateMatching: calendar.dateComponents([.year, .month, .day, .hour, .minute], from: targetDate),
-            repeats: false
+        // Reuse the weekday identifier so this REPLACES the generic one (no duplicate).
+        // Also clear the legacy identifier so older installs don't keep a stray duplicate.
+        let identifier = "rekindle_day_\(weekday)"
+        center.removePendingNotificationRequests(
+            withIdentifiers: [identifier, "rekindle_personalized_today"]
         )
 
         let request = UNNotificationRequest(
-            identifier: "rekindle_personalized_today",
+            identifier: identifier,
             content: content,
             trigger: trigger
         )

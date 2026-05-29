@@ -248,7 +248,7 @@ struct SettingsView: View {
                     Text("Version")
                         .font(Theme.body)
                     Spacer()
-                    Text("1.0.0")
+                    Text(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "—")
                         .font(Theme.body)
                         .foregroundStyle(.secondary)
                 }

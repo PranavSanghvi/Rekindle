@@ -224,7 +224,7 @@ struct OnboardingView: View {
                             let todayStart = Calendar.current.startOfDay(for: Date())
                             let todayEnd = Calendar.current.date(byAdding: .day, value: 1, to: todayStart)!
                             
-                            var recDescriptor = FetchDescriptor<Recommendation>(
+                            let recDescriptor = FetchDescriptor<Recommendation>(
                                 predicate: #Predicate<Recommendation> { rec in
                                     rec.date >= todayStart && rec.date < todayEnd
                                 }
