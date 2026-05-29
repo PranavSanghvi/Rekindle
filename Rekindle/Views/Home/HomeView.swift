@@ -6,6 +6,7 @@ struct HomeView: View {
     @Environment(\.scenePhase) private var scenePhase
     @State private var viewModel = HomeViewModel()
     @Query private var settingsArray: [AppSettings]
+    @State private var favoriteToRemove: RekindleContact?
 
     private var settings: AppSettings? { settingsArray.first }
 
@@ -15,14 +16,29 @@ struct HomeView: View {
                 VStack(spacing: Theme.paddingMedium) {
                     if viewModel.isLoading {
                         loadingView
-                    } else if settings?.isCurrentlyPaused == true {
-                        pausedView
-                    } else if viewModel.todayRecommendations.isEmpty {
-                        emptyView
-                    } else if viewModel.allResolved {
-                        allDoneView
                     } else {
-                        recommendationsView
+                        // Standard picks
+                        if settings?.isCurrentlyPaused == true {
+                            pausedView
+                        } else if viewModel.todayRecommendations.isEmpty {
+                            emptyView
+                        } else if viewModel.allResolved {
+                            allDoneView
+                        } else {
+                            recommendationsView
+                        }
+
+                        // Favorites sit just below the standard picks and above
+                        // "Get More Picks" — so any newly added pick appears above this section.
+                        if !viewModel.favoriteRecommendations.isEmpty {
+                            favoritesSection
+                        }
+
+                        // Get More Picks — only when there are standard picks today and not paused
+                        if settings?.isCurrentlyPaused != true && !viewModel.todayRecommendations.isEmpty {
+                            morePicksButton
+                                .padding(.top, 4)
+                        }
                     }
                 }
                 .padding(.horizontal, Theme.paddingMedium)
@@ -66,7 +82,56 @@ struct HomeView: View {
                     returnPromptOverlay
                 }
             }
+            .alert(
+                "Remove from Favorites?",
+                isPresented: Binding(
+                    get: { favoriteToRemove != nil },
+                    set: { if !$0 { favoriteToRemove = nil } }
+                ),
+                presenting: favoriteToRemove
+            ) { contact in
+                Button("Remove", role: .destructive) {
+                    viewModel.removeFavorite(contact)
+                    favoriteToRemove = nil
+                }
+                Button("Cancel", role: .cancel) { favoriteToRemove = nil }
+            } message: { contact in
+                Text("\(contact.fullName) will no longer appear in your favorites.")
+            }
         }
+    }
+
+    // MARK: - Favorites Section
+
+    private var favoritesSection: some View {
+        VStack(spacing: 12) {
+            ForEach(viewModel.favoriteRecommendations) { rec in
+                RecommendationCardView(
+                    recommendation: rec,
+                    onDone: { viewModel.markDone(rec) },
+                    onSkip: {},
+                    onPostpone: { viewModel.postpone(rec) },
+                    onText: { viewModel.openMessages(for: rec) },
+                    onSnooze: {},
+                    isFavorite: true,
+                    onCall: { viewModel.call(for: rec) },
+                    onRemove: { favoriteToRemove = rec.contact }
+                )
+            }
+        }
+        // Gold "Keep close" tab tucked onto the top-left of the first favorite card
+        .overlay(alignment: .topLeading) {
+            Text("KEEP CLOSE")
+                .font(.system(size: 11, weight: .bold, design: .rounded))
+                .foregroundStyle(.white)
+                .padding(.horizontal, 14)
+                .padding(.vertical, 6)
+                .background(Theme.amber)
+                .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+                .padding(.leading, 16)
+                .offset(y: -12)
+        }
+        .padding(.top, 18)
     }
 
     // MARK: - Return from Messages Prompt
@@ -181,8 +246,6 @@ struct HomeView: View {
             Text("Great job staying connected today.")
                 .font(Theme.body)
                 .foregroundStyle(.secondary)
-
-            morePicksButton
         }
         .frame(maxWidth: .infinity, minHeight: 300)
         .padding(.top, 60)
@@ -206,9 +269,6 @@ struct HomeView: View {
                     }
                 )
             }
-
-            morePicksButton
-                .padding(.top, 8)
         }
     }
 

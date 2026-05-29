@@ -3,14 +3,17 @@ import SwiftData
 
 struct ContactsListView: View {
     @Environment(\.modelContext) private var modelContext
+    @Environment(AppRouter.self) private var router
     @State private var viewModel = ContactsViewModel()
     @EnvironmentObject private var contactService: ContactService
     @State private var showSnoozeSheet = false
     @State private var contactToSnooze: RekindleContact?
+    @State private var contactToUnfavorite: RekindleContact?
     @State private var selectedFilter: ContactFilter = .active
 
     enum ContactFilter: String, CaseIterable {
         case active = "Active"
+        case favorites = "Favorites"
         case snoozed = "Snoozed"
         case blocked = "Blocked"
     }
@@ -49,6 +52,16 @@ struct ContactsListView: View {
             .onAppear {
                 viewModel.setup(modelContext: modelContext)
                 viewModel.loadContacts()
+                if router.focusFavorites {
+                    selectedFilter = .favorites
+                    router.focusFavorites = false
+                }
+            }
+            .onChange(of: router.focusFavorites) { _, focus in
+                if focus {
+                    selectedFilter = .favorites
+                    router.focusFavorites = false
+                }
             }
             .sheet(item: $contactToSnooze) { contact in
                 SnoozeSheet(contactName: contact.fullName) { date in
@@ -57,6 +70,31 @@ struct ContactsListView: View {
                     viewModel.toggleBlock(contact)
                 }
             }
+            .alert(
+                "Remove from Favorites?",
+                isPresented: Binding(
+                    get: { contactToUnfavorite != nil },
+                    set: { if !$0 { contactToUnfavorite = nil } }
+                ),
+                presenting: contactToUnfavorite
+            ) { contact in
+                Button("Remove", role: .destructive) {
+                    viewModel.setFavorite(contact, to: false)
+                    contactToUnfavorite = nil
+                }
+                Button("Cancel", role: .cancel) { contactToUnfavorite = nil }
+            } message: { contact in
+                Text("\(contact.fullName) will no longer appear in your favorites.")
+            }
+        }
+    }
+
+    /// Star tapped: add immediately, but confirm before removing.
+    private func toggleFavorite(_ contact: RekindleContact) {
+        if contact.isFavorite {
+            contactToUnfavorite = contact
+        } else {
+            viewModel.setFavorite(contact, to: true)
         }
     }
 
@@ -147,6 +185,8 @@ struct ContactsListView: View {
     private func filterLabel(_ filter: ContactFilter) -> String {
         switch filter {
         case .active: return "Active"
+        case .favorites:
+            return "Favorites"
         case .snoozed:
             let count = viewModel.snoozedContacts.count
             return count > 0 ? "Snoozed (\(count))" : "Snoozed"
@@ -159,6 +199,7 @@ struct ContactsListView: View {
     private var filteredContacts: [RekindleContact] {
         switch selectedFilter {
         case .active: return viewModel.activeContacts
+        case .favorites: return viewModel.favoriteContacts
         case .snoozed: return viewModel.snoozedContacts
         case .blocked: return viewModel.blockedContacts
         }
@@ -166,12 +207,23 @@ struct ContactsListView: View {
 
     private var emptyFilterView: some View {
         VStack(spacing: 12) {
-            Text(selectedFilter == .snoozed ? "No snoozed contacts" : "No blocked contacts")
+            Text(emptyFilterMessage)
                 .font(Theme.body)
                 .foregroundStyle(.secondary)
+                .multilineTextAlignment(.center)
         }
         .frame(maxWidth: .infinity)
         .padding(.top, 60)
+        .padding(.horizontal, Theme.paddingLarge)
+    }
+
+    private var emptyFilterMessage: String {
+        switch selectedFilter {
+        case .favorites: return "No favorites yet.\nTap the star on a contact to add them."
+        case .snoozed: return "No snoozed contacts"
+        case .blocked: return "No blocked contacts"
+        case .active: return "No contacts"
+        }
     }
 
     @ViewBuilder
@@ -209,8 +261,30 @@ struct ContactsListView: View {
 
             Spacer()
 
+            // Favorite star toggle (hidden for blocked contacts)
+            if !contact.isBlocked {
+                Button {
+                    toggleFavorite(contact)
+                } label: {
+                    Image(systemName: contact.isFavorite ? "star.fill" : "star")
+                        .font(.body)
+                        .foregroundStyle(contact.isFavorite ? Theme.amber : Color.secondary)
+                        .padding(.vertical, 8)
+                        .padding(.horizontal, 4)
+                }
+                .buttonStyle(.plain)
+            }
+
             // Ellipsis Menu replaces swipe actions
             Menu {
+                if !contact.isBlocked {
+                    Button(contact.isFavorite ? "Remove from Favorites" : "Add to Favorites") {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                            toggleFavorite(contact)
+                        }
+                    }
+                }
+
                 if contact.isBlocked {
                     Button("Unblock", role: .none) {
                         // Workaround: delay slightly to let menu dismiss
@@ -253,6 +327,11 @@ struct ContactsListView: View {
         .padding(.horizontal, Theme.paddingMedium)
         // Also allow long press on the row itself to bring up the same context menu
         .contextMenu {
+            if !contact.isBlocked {
+                Button(contact.isFavorite ? "Remove from Favorites" : "Add to Favorites") {
+                    toggleFavorite(contact)
+                }
+            }
             if contact.isBlocked {
                 Button("Unblock") { viewModel.toggleBlock(contact) }
             } else {

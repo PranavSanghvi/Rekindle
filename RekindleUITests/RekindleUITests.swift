@@ -83,6 +83,60 @@ final class RekindleUITests: XCTestCase {
         capture("onboarding_complete")
     }
 
+    // MARK: - Favorites (requires favorites enabled + at least one favorite contact in the store)
+
+    func testFavoritesFlow() throws {
+        let tabs = app.tabBars.firstMatch
+
+        // --- Settings: favorites section + deep link ---
+        tabs.buttons["Settings"].tap()
+        sleep(1)
+        // Scroll a touch in case the section is below the fold
+        let favSwitch = app.switches["Favorite picks"]
+        XCTAssertTrue(favSwitch.waitForExistence(timeout: 4), "Settings should show the Favorite picks toggle")
+        capture("fav_1_settings")
+
+        // Manage Favorites sits at the bottom of the form — scroll it into view, then require it.
+        app.swipeUp()
+        sleep(1)
+        let manage = app.buttons["manageFavorites"]
+        XCTAssertTrue(manage.waitForExistence(timeout: 4), "Settings should show Manage Favorites")
+        manage.tap()
+        sleep(1)
+        capture("fav_2_manage_lands_contacts")
+        // Deep link should land on Contacts → Favorites with our favorite visible
+        XCTAssertTrue(
+            app.staticTexts["Kate Bell"].waitForExistence(timeout: 4),
+            "Manage Favorites should deep-link to the Favorites filter showing the favorite contact"
+        )
+
+        // --- Today: favorite card + expand + remove confirmation ---
+        tabs.buttons["Today"].tap()
+        sleep(1)
+        app.swipeUp()
+        sleep(1)
+        capture("fav_3_today_keep_close")
+
+        let kate = app.staticTexts["Kate Bell"]
+        if kate.waitForExistence(timeout: 3) {
+            kate.tap() // expand the favorite card
+            sleep(1)
+            capture("fav_4_expanded")
+
+            let remove = app.buttons["Remove from Favorites"]
+            if remove.waitForExistence(timeout: 3) {
+                remove.tap()
+                sleep(1)
+                capture("fav_5_remove_confirm")
+                // Confirmation alert must appear; Cancel keeps the favorite
+                XCTAssertTrue(app.alerts.firstMatch.waitForExistence(timeout: 3), "Remove should prompt a confirmation alert")
+                if app.alerts.buttons["Cancel"].exists {
+                    app.alerts.buttons["Cancel"].tap()
+                }
+            }
+        }
+    }
+
     // MARK: - Widget (Small 2×2 and Medium 4×2)
 
     func testWidgets() throws {

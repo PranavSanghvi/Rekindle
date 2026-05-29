@@ -9,6 +9,8 @@ import WidgetKit
 final class HomeViewModel {
 
     var todayRecommendations: [Recommendation] = []
+    /// Favorite picks — a separate channel shown in addition to standard picks.
+    var favoriteRecommendations: [Recommendation] = []
     var isLoading = false
     var showSnoozeFor: RekindleContact?
     var errorMessage: String?
@@ -37,10 +39,12 @@ final class HomeViewModel {
             let todayStart = Calendar.current.startOfDay(for: Date())
             let todayEnd = Calendar.current.date(byAdding: .day, value: 1, to: todayStart)!
 
-            // First try to fetch existing recommendations for today
+            // First try to fetch existing STANDARD recommendations for today
+            // (favorites are loaded separately, below — they must not appear here or
+            // count toward the daily total).
             let descriptor = FetchDescriptor<Recommendation>(
                 predicate: #Predicate<Recommendation> { rec in
-                    rec.date >= todayStart && rec.date < todayEnd
+                    rec.date >= todayStart && rec.date < todayEnd && rec.isFavorite == false
                 },
                 sortBy: [SortDescriptor(\.date)]
             )
@@ -56,6 +60,27 @@ final class HomeViewModel {
                 WidgetCenter.shared.reloadAllTimelines()
             } else {
                 todayRecommendations = existing
+            }
+
+            // Favorites — a separate channel, loaded/generated independently of standard picks
+            if settings.favoritesEnabled && !settings.isCurrentlyPaused {
+                let favDescriptor = FetchDescriptor<Recommendation>(
+                    predicate: #Predicate<Recommendation> { rec in
+                        rec.date >= todayStart && rec.date < todayEnd && rec.isFavorite == true
+                    },
+                    sortBy: [SortDescriptor(\.date)]
+                )
+                let existingFavorites = try modelContext.fetch(favDescriptor)
+                if existingFavorites.isEmpty {
+                    favoriteRecommendations = try RecommendationEngine.generateFavoriteRecommendations(
+                        modelContext: modelContext,
+                        settings: settings
+                    )
+                } else {
+                    favoriteRecommendations = existingFavorites
+                }
+            } else {
+                favoriteRecommendations = []
             }
         } catch {
             errorMessage = "Failed to load recommendations: \(error.localizedDescription)"
@@ -114,6 +139,8 @@ final class HomeViewModel {
         guard let modelContext else { return }
         contact.isBlocked = true
         contact.snoozedUntil = nil
+        contact.isFavorite = false // blocking drops favorite status
+        favoriteRecommendations.removeAll { $0.contact === contact }
         // Mark the card with the correct blocked status
         if let rec = todayRecommendations.first(where: { $0.contact === contact && $0.status == .pending }) {
             rec.status = .blocked
@@ -137,6 +164,30 @@ final class HomeViewModel {
 
         if let url = URL(string: "sms:\(cleaned)") {
             UIApplication.shared.open(url)
+        }
+    }
+
+    /// Start a phone call for a contact, tracking for the return prompt (used by favorites)
+    func call(for recommendation: Recommendation) {
+        guard let contact = recommendation.contact,
+              let phone = contact.phoneNumber else { return }
+
+        pendingMessageRecommendation = recommendation
+        let cleaned = phone.replacingOccurrences(of: "[^0-9+]", with: "", options: .regularExpression)
+
+        if let url = URL(string: "tel:\(cleaned)") {
+            UIApplication.shared.open(url)
+        }
+    }
+
+    /// Remove a contact from favorites (drops it from the favorites channel)
+    func removeFavorite(_ contact: RekindleContact) {
+        guard let modelContext else { return }
+        do {
+            try RecommendationEngine.removeFavorite(contact, modelContext: modelContext)
+            favoriteRecommendations.removeAll { $0.contact === contact }
+        } catch {
+            errorMessage = "Failed to remove favorite: \(error.localizedDescription)"
         }
     }
 

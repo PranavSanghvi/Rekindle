@@ -28,6 +28,17 @@ final class AppSettings {
     /// Cooldown in days before someone can be re-recommended
     var cooldownDays: Int = 90
 
+    // MARK: - Favorites
+
+    /// Whether the favorites channel is enabled (opt-in)
+    var favoritesEnabled: Bool = false
+
+    /// How many favorite picks to surface per session (in addition to standard picks)
+    var favoritesPerSession: Int = 1
+
+    /// How often a favorite can resurface, in days (short cadence, default weekly)
+    var favoriteCooldownDays: Int = 7
+
     /// Whether recommendations are paused
     var isPaused: Bool = false
 

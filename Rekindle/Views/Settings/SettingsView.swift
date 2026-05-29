@@ -3,10 +3,19 @@ import SwiftData
 
 struct SettingsView: View {
     @Environment(\.modelContext) private var modelContext
+    @Environment(AppRouter.self) private var router
     @State private var viewModel = SettingsViewModel()
     @EnvironmentObject private var contactService: ContactService
     @EnvironmentObject private var notificationService: NotificationService
     @State private var settings: AppSettings?
+    @Query(filter: #Predicate<RekindleContact> { $0.isFavorite }) private var favoriteContacts: [RekindleContact]
+
+    private let favoriteCadenceOptions: [(label: String, days: Int)] = [
+        ("Daily", 1),
+        ("Every 3 Days", 3),
+        ("Weekly", 7),
+        ("Biweekly", 14),
+    ]
 
     private let cooldownOptions: [(label: String, days: Int)] = [
         ("1 Week", 7),
@@ -135,6 +144,78 @@ struct SettingsView: View {
                 Text("Recommendations")
             } footer: {
                 Text("After you reach out to someone, they won't be recommended again for the cooldown period.")
+            }
+
+            // MARK: - Favorites Section
+            Section {
+                Toggle("Favorite picks", isOn: Binding(
+                    get: { settings.favoritesEnabled },
+                    set: {
+                        settings.favoritesEnabled = $0
+                        viewModel.save()
+                    }
+                ))
+                .font(Theme.body)
+
+                if settings.favoritesEnabled {
+                    Stepper(
+                        "Favorite picks per day: \(settings.favoritesPerSession)",
+                        value: Binding(
+                            get: { settings.favoritesPerSession },
+                            set: {
+                                settings.favoritesPerSession = $0
+                                viewModel.save()
+                            }
+                        ),
+                        in: 1...3
+                    )
+                    .font(Theme.body)
+
+                    Picker("Show a favorite", selection: Binding(
+                        get: { settings.favoriteCooldownDays },
+                        set: {
+                            settings.favoriteCooldownDays = $0
+                            viewModel.save()
+                        }
+                    )) {
+                        ForEach(favoriteCadenceOptions, id: \.days) { option in
+                            Text(option.label).tag(option.days)
+                        }
+                    }
+                    .font(Theme.body)
+
+                    Button {
+                        router.openFavorites()
+                    } label: {
+                        HStack {
+                            Image(systemName: "star.fill")
+                            Text("Manage Favorites")
+                            Spacer()
+                            Text("\(favoriteContacts.count)")
+                                .foregroundStyle(.secondary)
+                            Image(systemName: "chevron.right")
+                                .font(.caption)
+                                .foregroundStyle(.tertiary)
+                        }
+                        .font(Theme.body)
+                        .foregroundStyle(Theme.coral)
+                    }
+                    .accessibilityIdentifier("manageFavorites")
+                }
+            } header: {
+                Text("Favorites")
+            } footer: {
+                if settings.favoritesEnabled {
+                    if favoriteContacts.isEmpty {
+                        Text("Star contacts in the Contacts tab to see them here — close friends and family you want to reach out to often, in addition to your regular picks.")
+                    } else if settings.favoritesPerSession > favoriteContacts.count {
+                        Text("You have \(favoriteContacts.count) favorite\(favoriteContacts.count == 1 ? "" : "s") but ask for \(settings.favoritesPerSession) per day — you'll see all of them every day.")
+                    } else {
+                        Text("Favorites appear in addition to your regular picks and don't count toward your daily total.")
+                    }
+                } else {
+                    Text("Surface close friends and family on a short, recurring cadence — in addition to your regular recommendations.")
+                }
             }
 
             // MARK: - Pause Section

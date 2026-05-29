@@ -7,12 +7,12 @@ struct ContentView: View {
     @EnvironmentObject private var contactService: ContactService
     @EnvironmentObject private var notificationService: NotificationService
 
-    @State private var selectedTab = 0
+    @State private var router = AppRouter()
     @State private var showOnboarding = false
     @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding = false
 
     var body: some View {
-        TabView(selection: $selectedTab) {
+        TabView(selection: $router.selectedTab) {
             HomeView()
                 .tabItem {
                     Label("Today", systemImage: "flame.fill")
@@ -37,6 +37,7 @@ struct ContentView: View {
                 }
                 .tag(3)
         }
+        .environment(router)
         .tint(Theme.coral)
         .onAppear {
             configureTabBarAppearance()

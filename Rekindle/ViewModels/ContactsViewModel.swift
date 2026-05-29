@@ -38,6 +38,10 @@ final class ContactsViewModel {
         filteredContacts.filter { !$0.isBlocked && $0.isSnoozed }
     }
 
+    var favoriteContacts: [RekindleContact] {
+        filteredContacts.filter { $0.isFavorite }
+    }
+
     func loadContacts() {
         guard let modelContext else { return }
         isLoading = true
@@ -58,10 +62,21 @@ final class ContactsViewModel {
 
     func toggleBlock(_ contact: RekindleContact) {
         contact.isBlocked.toggle()
+        if contact.isBlocked { contact.isFavorite = false } // blocking drops favorite status
         do {
             try modelContext?.save()
         } catch {
             errorMessage = "Failed to update: \(error.localizedDescription)"
+        }
+    }
+
+    /// Set (or clear) a contact's favorite status.
+    func setFavorite(_ contact: RekindleContact, to value: Bool) {
+        contact.isFavorite = value
+        do {
+            try modelContext?.save()
+        } catch {
+            errorMessage = "Failed to update favorite: \(error.localizedDescription)"
         }
     }
 
