@@ -229,11 +229,16 @@ final class HomeViewModel {
         }
     }
 
+    /// Standard picks + favorites combined — favorites count toward the daily total.
+    private var allTodayRecommendations: [Recommendation] {
+        todayRecommendations + favoriteRecommendations
+    }
+
     var pendingCount: Int {
-        todayRecommendations.filter { $0.status == .pending }.count
+        allTodayRecommendations.filter { $0.status == .pending }.count
     }
 
     var allResolved: Bool {
-        !todayRecommendations.isEmpty && pendingCount == 0
+        !allTodayRecommendations.isEmpty && pendingCount == 0
     }
 }
