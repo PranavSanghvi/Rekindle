@@ -217,8 +217,7 @@ private enum WidgetTheme {
     static let coral = Color(red: 0.98, green: 0.52, blue: 0.52)
     static let warmOrange = Color(red: 0.98, green: 0.65, blue: 0.45)
     static let sageGreen = Color(red: 0.55, green: 0.76, blue: 0.62)
-    static let amber = Color(red: 1.0, green: 0.78, blue: 0.40)
-    static let gold = Color(red: 0.85, green: 0.60, blue: 0.0)   // favorites — distinct from postponed amber
+    static let amber = Color(red: 1.0, green: 0.78, blue: 0.40)  // favorites + postponed (matches the app's "Keep close" pill)
     static let softTeal = Color(red: 0.40, green: 0.82, blue: 0.80)
     static let dustyBlue = Color(red: 0.52, green: 0.68, blue: 0.88)
     
@@ -310,7 +309,7 @@ struct SmallWidgetView: View {
                                 .frame(width: 24, height: 24)
                                 .background(
                                     contact.isFavorite
-                                        ? WidgetTheme.gold
+                                        ? WidgetTheme.amber
                                         : contact.isDone
                                             ? WidgetTheme.sageGreen
                                             : contact.isPostponed
@@ -429,7 +428,7 @@ struct MediumWidgetView: View {
                                 .frame(width: 26, height: 26)
                                 .background(
                                     contact.isFavorite
-                                        ? WidgetTheme.gold
+                                        ? WidgetTheme.amber
                                         : contact.isDone
                                             ? WidgetTheme.sageGreen
                                             : contact.isPostponed
