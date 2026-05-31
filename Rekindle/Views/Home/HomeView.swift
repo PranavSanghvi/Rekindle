@@ -20,13 +20,17 @@ struct HomeView: View {
                         // Standard picks
                         if settings?.isCurrentlyPaused == true {
                             pausedView
-                        } else if viewModel.todayRecommendations.isEmpty {
+                        } else if !viewModel.todayRecommendations.isEmpty {
+                            if viewModel.allResolved {
+                                allDoneView
+                            } else {
+                                recommendationsView
+                            }
+                        } else if viewModel.favoriteRecommendations.isEmpty {
+                            // Nothing at all today
                             emptyView
-                        } else if viewModel.allResolved {
-                            allDoneView
-                        } else {
-                            recommendationsView
                         }
+                        // (standard empty but favorites exist → just show the favorites below)
 
                         // Favorites sit just below the standard picks and above
                         // "Get More Picks" — so any newly added pick appears above this section.
@@ -48,7 +52,7 @@ struct HomeView: View {
             .navigationTitle("Today")
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
-                    if !viewModel.todayRecommendations.isEmpty {
+                    if !viewModel.todayRecommendations.isEmpty || !viewModel.favoriteRecommendations.isEmpty {
                         Text("\(viewModel.pendingCount) left")
                             .font(Theme.caption)
                             .foregroundStyle(.secondary)

@@ -30,8 +30,8 @@ final class AppSettings {
 
     // MARK: - Favorites
 
-    /// Whether the favorites channel is enabled (opt-in)
-    var favoritesEnabled: Bool = false
+    /// Whether the favorites channel is enabled (on by default)
+    var favoritesEnabled: Bool = true
 
     /// How many favorite picks to surface per session (in addition to standard picks)
     var favoritesPerSession: Int = 1
