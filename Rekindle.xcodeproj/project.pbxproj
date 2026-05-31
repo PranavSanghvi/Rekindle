@@ -11,12 +11,12 @@
 		1389E390C2EB5A503749CA78 /* AppSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 224A77DC33494F75BDDF86BB /* AppSettings.swift */; };
 		1A408B939E5DACE8DAD24E65 /* SettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4F2D3FE116BED833F5834B4 /* SettingsViewModel.swift */; };
 		35A31BB1D232B55CBB22FD75 /* RekindleApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A6B6EB9DFD7D90F6E8E70DE /* RekindleApp.swift */; };
+		36DF22065E7846A396413748 /* RekindleUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D23128D11889476F8C8C5473 /* RekindleUITests.swift */; };
 		3E93206DE57815BA93FA0655 /* ContactsListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B479DE5AE28D88F59E45B9C /* ContactsListView.swift */; };
 		48BCE8F427344F65B4434598 /* RecommendationCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BF195CC85058E2F2403568 /* RecommendationCardView.swift */; };
 		522CBD9D3CAE6AE6D77F48D5 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F6C23AEB7AD0561BF3F2827 /* SettingsView.swift */; };
 		59FAE47E481BA9402C2105B1 /* ContactService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70D2EA979F5F829356CFEAE5 /* ContactService.swift */; };
 		777544FF6D106CB14D645F9F /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F236E0846B4C757C8C40FA6 /* ContentView.swift */; };
-		F1A2B3C4D5E6F70819203041 /* AppRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1A2B3C4D5E6F70819203042 /* AppRouter.swift */; };
 		BBAA4697D827C65F7D2171A4 /* HomeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E2211F4827AEE9A05B3B9F8 /* HomeViewModel.swift */; };
 		BD66CD1E57A7F880968C07F6 /* BackgroundTaskService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B0C93889DB94FC2BCE9B19D /* BackgroundTaskService.swift */; };
 		CB75892A8F51404E5F9A1997 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A5BA871649F3CB03EC057D77 /* Assets.xcassets */; };
@@ -35,27 +35,26 @@
 		DEFC569A2F98768D00FB945A /* SharedModelContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEFC56982F98768D00FB945A /* SharedModelContainer.swift */; };
 		E71F4DC07756D3CECAF788DE /* ContactsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6071D613593297FF431A1815 /* ContactsViewModel.swift */; };
 		F0C2125ED51B142C6CE0DB96 /* HistoryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6273C871F990013E37718422 /* HistoryViewModel.swift */; };
+		F1A2B3C4D5E6F70819203041 /* AppRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1A2B3C4D5E6F70819203042 /* AppRouter.swift */; };
 		F8204332C03FAC83D31E49A3 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1BC8F1E1F4F46EE4D2BD291 /* Theme.swift */; };
 		FB419C9A9FB6A61595F91884 /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB11F64BA890A2D299741C04 /* NotificationService.swift */; };
-		36DF22065E7846A396413748 /* RekindleUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D23128D11889476F8C8C5473 /* RekindleUITests.swift */; };
-		SNAP0000000000005678 /* WidgetSnapshotTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = SNAP0000000000001234; };
+		SNAP0000000000005678 /* WidgetSnapshotTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = SNAP0000000000001234 /* WidgetSnapshotTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		DEFC56812F9872D600FB945A /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 4F494126E38A494DDE80DC8D /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = DEFC566C2F9872D500FB945A;
-			remoteInfo = RekindleWidgetExtension;
-		};
-
 		5C0AFAD68B424464B52E851F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 4F494126E38A494DDE80DC8D /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = 5D4DB5F7F4A435BD812533ED;
 			remoteInfo = Rekindle;
+		};
+		DEFC56812F9872D600FB945A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4F494126E38A494DDE80DC8D /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = DEFC566C2F9872D500FB945A;
+			remoteInfo = RekindleWidgetExtension;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -89,10 +88,10 @@
 		78B8DDE72A5556290F4F7C2E /* RekindleContact.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RekindleContact.swift; sourceTree = "<group>"; };
 		7A6B6EB9DFD7D90F6E8E70DE /* RekindleApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RekindleApp.swift; sourceTree = "<group>"; };
 		7F236E0846B4C757C8C40FA6 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
-		F1A2B3C4D5E6F70819203042 /* AppRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppRouter.swift; sourceTree = "<group>"; };
 		7F6C23AEB7AD0561BF3F2827 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		A5BA871649F3CB03EC057D77 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		C5C97D484E7ADCC3EC83922B /* HistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryView.swift; sourceTree = "<group>"; };
+		D23128D11889476F8C8C5473 /* RekindleUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RekindleUITests.swift; sourceTree = "<group>"; };
 		DEFC566D2F9872D500FB945A /* RekindleWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = RekindleWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		DEFC566F2F9872D500FB945A /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		DEFC56712F9872D500FB945A /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
@@ -100,10 +99,10 @@
 		DEFC56982F98768D00FB945A /* SharedModelContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedModelContainer.swift; sourceTree = "<group>"; };
 		E1BC8F1E1F4F46EE4D2BD291 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
 		E4F2D3FE116BED833F5834B4 /* SettingsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewModel.swift; sourceTree = "<group>"; };
+		F1A2B3C4D5E6F70819203042 /* AppRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppRouter.swift; sourceTree = "<group>"; };
 		F7BF195CC85058E2F2403568 /* RecommendationCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecommendationCardView.swift; sourceTree = "<group>"; };
 		FB11F64BA890A2D299741C04 /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
 		SNAP0000000000001234 /* WidgetSnapshotTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetSnapshotTests.swift; sourceTree = "<group>"; };
-		D23128D11889476F8C8C5473 /* RekindleUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RekindleUITests.swift; sourceTree = "<group>"; };
 		UITEST00000000000001 /* RekindleUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RekindleUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -235,6 +234,15 @@
 			path = Rekindle;
 			sourceTree = "<group>";
 		};
+		A1B2C3D4E5F6A7B8C9D0E1F2 /* RekindleUITests */ = {
+			isa = PBXGroup;
+			children = (
+				D23128D11889476F8C8C5473 /* RekindleUITests.swift */,
+				SNAP0000000000001234 /* WidgetSnapshotTests.swift */,
+			);
+			path = RekindleUITests;
+			sourceTree = "<group>";
+		};
 		AD882A367A927E0037337262 /* Theme */ = {
 			isa = PBXGroup;
 			children = (
@@ -274,16 +282,6 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-
-		A1B2C3D4E5F6A7B8C9D0E1F2 /* RekindleUITests */ = {
-			isa = PBXGroup;
-			children = (
-				D23128D11889476F8C8C5473 /* RekindleUITests.swift */,
-				SNAP0000000000001234 /* WidgetSnapshotTests.swift */,
-			);
-			path = RekindleUITests;
-			sourceTree = "<group>";
-		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -307,6 +305,22 @@
 			productReference = 2D039A3B94806443C3DFE75F /* Rekindle.app */;
 			productType = "com.apple.product-type.application";
 		};
+		80BB8C56759B48679FADF23C /* RekindleUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D94899B3C83642DDBE503EDA /* Build configuration list for PBXNativeTarget "RekindleUITests" */;
+			buildPhases = (
+				320A42588B974605B8F0FBEE /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				1A19704295024A139F3B94B7 /* PBXTargetDependency */,
+			);
+			name = RekindleUITests;
+			productName = RekindleUITests;
+			productReference = UITEST00000000000001 /* RekindleUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
 		DEFC566C2F9872D500FB945A /* RekindleWidgetExtension */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = DEFC56882F9872D600FB945A /* Build configuration list for PBXNativeTarget "RekindleWidgetExtension" */;
@@ -328,23 +342,6 @@
 			productName = RekindleWidgetExtension;
 			productReference = DEFC566D2F9872D500FB945A /* RekindleWidgetExtension.appex */;
 			productType = "com.apple.product-type.app-extension";
-		};
-
-		80BB8C56759B48679FADF23C /* RekindleUITests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = D94899B3C83642DDBE503EDA /* Build configuration list for PBXNativeTarget "RekindleUITests" */;
-			buildPhases = (
-				320A42588B974605B8F0FBEE /* Sources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				1A19704295024A139F3B94B7 /* PBXTargetDependency */,
-			);
-			name = RekindleUITests;
-			productName = RekindleUITests;
-			productReference = UITEST00000000000001 /* RekindleUITests.xctest */;
-			productType = "com.apple.product-type.bundle.ui-testing";
 		};
 /* End PBXNativeTarget section */
 
@@ -401,6 +398,15 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		320A42588B974605B8F0FBEE /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				36DF22065E7846A396413748 /* RekindleUITests.swift in Sources */,
+				SNAP0000000000005678 /* WidgetSnapshotTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		DEFC56692F9872D500FB945A /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -441,33 +447,35 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-
-		320A42588B974605B8F0FBEE /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				36DF22065E7846A396413748 /* RekindleUITests.swift in Sources */,
-				SNAP0000000000005678 /* WidgetSnapshotTests.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		DEFC56822F9872D600FB945A /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = DEFC566C2F9872D500FB945A /* RekindleWidgetExtension */;
-			targetProxy = DEFC56812F9872D600FB945A /* PBXContainerItemProxy */;
-		};
-
 		1A19704295024A139F3B94B7 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 5D4DB5F7F4A435BD812533ED /* Rekindle */;
 			targetProxy = 5C0AFAD68B424464B52E851F /* PBXContainerItemProxy */;
 		};
+		DEFC56822F9872D600FB945A /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = DEFC566C2F9872D500FB945A /* RekindleWidgetExtension */;
+			targetProxy = DEFC56812F9872D600FB945A /* PBXContainerItemProxy */;
+		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		0C0DD71E982145FD8C32E3CF /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.pranavsanghvi.rekindle.uitests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TEST_TARGET_NAME = Rekindle;
+			};
+			name = Release;
+		};
 		8AA42A2A280A424D68D41978 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -475,7 +483,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = Rekindle/Rekindle.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 12;
+				CURRENT_PROJECT_VERSION = 13;
 				DEVELOPMENT_TEAM = 72F9LTDQ9N;
 				INFOPLIST_KEY_BGTaskSchedulerPermittedIdentifiers_Item0 = com.rekindle.app.generateRecommendations;
 				INFOPLIST_KEY_NSContactsUsageDescription = "Rekindle needs access to your contacts to suggest people to reconnect with. We never modify or share your contacts.";
@@ -488,7 +496,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.1.0;
+				MARKETING_VERSION = 2.1.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.pranavsanghvi.rekindle;
 				PRODUCT_NAME = Rekindle;
 				SDKROOT = iphoneos;
@@ -501,6 +509,19 @@
 			};
 			name = Debug;
 		};
+		97A95698FA3C4EC6B0403501 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.pranavsanghvi.rekindle.uitests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TEST_TARGET_NAME = Rekindle;
+			};
+			name = Debug;
+		};
 		9C0DF0E2911AEE46FCAEC7A6 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -508,7 +529,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = Rekindle/Rekindle.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 12;
+				CURRENT_PROJECT_VERSION = 13;
 				DEVELOPMENT_TEAM = 72F9LTDQ9N;
 				INFOPLIST_KEY_BGTaskSchedulerPermittedIdentifiers_Item0 = com.rekindle.app.generateRecommendations;
 				INFOPLIST_KEY_NSContactsUsageDescription = "Rekindle needs access to your contacts to suggest people to reconnect with. We never modify or share your contacts.";
@@ -521,7 +542,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.1.0;
+				MARKETING_VERSION = 2.1.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.pranavsanghvi.rekindle;
 				PRODUCT_NAME = Rekindle;
 				SDKROOT = iphoneos;
@@ -671,7 +692,7 @@
 				CODE_SIGN_ENTITLEMENTS = RekindleWidgetExtension.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 12;
+				CURRENT_PROJECT_VERSION = 13;
 				DEVELOPMENT_TEAM = 72F9LTDQ9N;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
@@ -690,7 +711,7 @@
 					"@executable_path/../../Frameworks",
 				);
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
-				MARKETING_VERSION = 2.1.0;
+				MARKETING_VERSION = 2.1.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.pranavsanghvi.rekindle.RekindleWidget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -714,7 +735,7 @@
 				CODE_SIGN_ENTITLEMENTS = RekindleWidgetExtension.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 12;
+				CURRENT_PROJECT_VERSION = 13;
 				DEVELOPMENT_TEAM = 72F9LTDQ9N;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
@@ -729,7 +750,7 @@
 					"@executable_path/../../Frameworks",
 				);
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
-				MARKETING_VERSION = 2.1.0;
+				MARKETING_VERSION = 2.1.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.pranavsanghvi.rekindle.RekindleWidget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -764,16 +785,6 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		DEFC56882F9872D600FB945A /* Build configuration list for PBXNativeTarget "RekindleWidgetExtension" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				DEFC56852F9872D600FB945A /* Debug */,
-				DEFC56862F9872D600FB945A /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-
 		D94899B3C83642DDBE503EDA /* Build configuration list for PBXNativeTarget "RekindleUITests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -783,31 +794,14 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		97A95698FA3C4EC6B0403501 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.pranavsanghvi.rekindle.uitests";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 5.0;
-				TEST_TARGET_NAME = Rekindle;
-			};
-			name = Debug;
-		};
-		0C0DD71E982145FD8C32E3CF /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.pranavsanghvi.rekindle.uitests";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 5.0;
-				TEST_TARGET_NAME = Rekindle;
-			};
-			name = Release;
+		DEFC56882F9872D600FB945A /* Build configuration list for PBXNativeTarget "RekindleWidgetExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				DEFC56852F9872D600FB945A /* Debug */,
+				DEFC56862F9872D600FB945A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
