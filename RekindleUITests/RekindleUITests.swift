@@ -137,6 +137,23 @@ final class RekindleUITests: XCTestCase {
         }
     }
 
+    // MARK: - Favorites empty state (requires no favorites in the store)
+
+    func testFavoritesEmptyState() throws {
+        let tabs = app.tabBars.firstMatch
+        tabs.buttons["Contacts"].tap()
+        sleep(1)
+        // Tap the "Favorites" segment
+        let favSegment = app.buttons["Favorites"]
+        if favSegment.waitForExistence(timeout: 3) {
+            favSegment.tap()
+            sleep(1)
+        }
+        capture("fav_empty_state")
+        XCTAssertTrue(app.buttons["Browse contacts"].waitForExistence(timeout: 3),
+                      "Favorites empty state should offer a 'Browse contacts' button")
+    }
+
     // MARK: - Widget (Small 2×2 and Medium 4×2)
 
     func testWidgets() throws {
