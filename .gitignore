@@ -1,4 +1,7 @@
-Rekindle.xcodeproj/
 .DS_Store
 build/
 CLAUDE.md
+
+# Xcode user-specific state — the project file and shared schemes ARE tracked
+**/xcuserdata/
+*.xcuserstate

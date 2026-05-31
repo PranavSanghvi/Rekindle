@@ -1,0 +1,815 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		01BC548EE5AB6B1D66D59A7D /* RecommendationEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63BF7D7CE925A67A9C585435 /* RecommendationEngine.swift */; };
+		1389E390C2EB5A503749CA78 /* AppSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 224A77DC33494F75BDDF86BB /* AppSettings.swift */; };
+		1A408B939E5DACE8DAD24E65 /* SettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4F2D3FE116BED833F5834B4 /* SettingsViewModel.swift */; };
+		35A31BB1D232B55CBB22FD75 /* RekindleApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A6B6EB9DFD7D90F6E8E70DE /* RekindleApp.swift */; };
+		3E93206DE57815BA93FA0655 /* ContactsListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B479DE5AE28D88F59E45B9C /* ContactsListView.swift */; };
+		48BCE8F427344F65B4434598 /* RecommendationCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BF195CC85058E2F2403568 /* RecommendationCardView.swift */; };
+		522CBD9D3CAE6AE6D77F48D5 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F6C23AEB7AD0561BF3F2827 /* SettingsView.swift */; };
+		59FAE47E481BA9402C2105B1 /* ContactService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70D2EA979F5F829356CFEAE5 /* ContactService.swift */; };
+		777544FF6D106CB14D645F9F /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F236E0846B4C757C8C40FA6 /* ContentView.swift */; };
+		F1A2B3C4D5E6F70819203041 /* AppRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1A2B3C4D5E6F70819203042 /* AppRouter.swift */; };
+		BBAA4697D827C65F7D2171A4 /* HomeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E2211F4827AEE9A05B3B9F8 /* HomeViewModel.swift */; };
+		BD66CD1E57A7F880968C07F6 /* BackgroundTaskService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B0C93889DB94FC2BCE9B19D /* BackgroundTaskService.swift */; };
+		CB75892A8F51404E5F9A1997 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A5BA871649F3CB03EC057D77 /* Assets.xcassets */; };
+		CFAA2F1191BED0815CE89DCF /* Recommendation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67AD267F21E21DACF00519F6 /* Recommendation.swift */; };
+		D68CCC1E93278720AD54484B /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 300FC33FA7BA1471A65A636D /* HomeView.swift */; };
+		D70CCE16B63449421D685674 /* RekindleContact.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78B8DDE72A5556290F4F7C2E /* RekindleContact.swift */; };
+		D79653D3AED3E39DE29A8419 /* HistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5C97D484E7ADCC3EC83922B /* HistoryView.swift */; };
+		DE9670232F9A8F6900AEE160 /* RecommendationEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63BF7D7CE925A67A9C585435 /* RecommendationEngine.swift */; };
+		DEFC56702F9872D500FB945A /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DEFC566F2F9872D500FB945A /* WidgetKit.framework */; };
+		DEFC56722F9872D500FB945A /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DEFC56712F9872D500FB945A /* SwiftUI.framework */; };
+		DEFC56832F9872D600FB945A /* RekindleWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = DEFC566D2F9872D500FB945A /* RekindleWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		DEFC56952F9875CE00FB945A /* RekindleContact.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78B8DDE72A5556290F4F7C2E /* RekindleContact.swift */; };
+		DEFC56962F9875D400FB945A /* Recommendation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67AD267F21E21DACF00519F6 /* Recommendation.swift */; };
+		DEFC56972F9875DC00FB945A /* AppSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 224A77DC33494F75BDDF86BB /* AppSettings.swift */; };
+		DEFC56992F98768D00FB945A /* SharedModelContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEFC56982F98768D00FB945A /* SharedModelContainer.swift */; };
+		DEFC569A2F98768D00FB945A /* SharedModelContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEFC56982F98768D00FB945A /* SharedModelContainer.swift */; };
+		E71F4DC07756D3CECAF788DE /* ContactsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6071D613593297FF431A1815 /* ContactsViewModel.swift */; };
+		F0C2125ED51B142C6CE0DB96 /* HistoryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6273C871F990013E37718422 /* HistoryViewModel.swift */; };
+		F8204332C03FAC83D31E49A3 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1BC8F1E1F4F46EE4D2BD291 /* Theme.swift */; };
+		FB419C9A9FB6A61595F91884 /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB11F64BA890A2D299741C04 /* NotificationService.swift */; };
+		36DF22065E7846A396413748 /* RekindleUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D23128D11889476F8C8C5473 /* RekindleUITests.swift */; };
+		SNAP0000000000005678 /* WidgetSnapshotTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = SNAP0000000000001234; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		DEFC56812F9872D600FB945A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4F494126E38A494DDE80DC8D /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = DEFC566C2F9872D500FB945A;
+			remoteInfo = RekindleWidgetExtension;
+		};
+
+		5C0AFAD68B424464B52E851F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4F494126E38A494DDE80DC8D /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 5D4DB5F7F4A435BD812533ED;
+			remoteInfo = Rekindle;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		DEFC56842F9872D600FB945A /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				DEFC56832F9872D600FB945A /* RekindleWidgetExtension.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		21A6E70BB656C998891AA517 /* Rekindle.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Rekindle.entitlements; sourceTree = "<group>"; };
+		224A77DC33494F75BDDF86BB /* AppSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSettings.swift; sourceTree = "<group>"; };
+		2B0C93889DB94FC2BCE9B19D /* BackgroundTaskService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundTaskService.swift; sourceTree = "<group>"; };
+		2D039A3B94806443C3DFE75F /* Rekindle.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Rekindle.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		300FC33FA7BA1471A65A636D /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
+		6071D613593297FF431A1815 /* ContactsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactsViewModel.swift; sourceTree = "<group>"; };
+		6273C871F990013E37718422 /* HistoryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryViewModel.swift; sourceTree = "<group>"; };
+		63BF7D7CE925A67A9C585435 /* RecommendationEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecommendationEngine.swift; sourceTree = "<group>"; };
+		67AD267F21E21DACF00519F6 /* Recommendation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Recommendation.swift; sourceTree = "<group>"; };
+		6B479DE5AE28D88F59E45B9C /* ContactsListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactsListView.swift; sourceTree = "<group>"; };
+		6E2211F4827AEE9A05B3B9F8 /* HomeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewModel.swift; sourceTree = "<group>"; };
+		70D2EA979F5F829356CFEAE5 /* ContactService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactService.swift; sourceTree = "<group>"; };
+		78B8DDE72A5556290F4F7C2E /* RekindleContact.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RekindleContact.swift; sourceTree = "<group>"; };
+		7A6B6EB9DFD7D90F6E8E70DE /* RekindleApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RekindleApp.swift; sourceTree = "<group>"; };
+		7F236E0846B4C757C8C40FA6 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		F1A2B3C4D5E6F70819203042 /* AppRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppRouter.swift; sourceTree = "<group>"; };
+		7F6C23AEB7AD0561BF3F2827 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		A5BA871649F3CB03EC057D77 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		C5C97D484E7ADCC3EC83922B /* HistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryView.swift; sourceTree = "<group>"; };
+		DEFC566D2F9872D500FB945A /* RekindleWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = RekindleWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		DEFC566F2F9872D500FB945A /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
+		DEFC56712F9872D500FB945A /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
+		DEFC56942F98755800FB945A /* RekindleWidgetExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = RekindleWidgetExtension.entitlements; sourceTree = "<group>"; };
+		DEFC56982F98768D00FB945A /* SharedModelContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedModelContainer.swift; sourceTree = "<group>"; };
+		E1BC8F1E1F4F46EE4D2BD291 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
+		E4F2D3FE116BED833F5834B4 /* SettingsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewModel.swift; sourceTree = "<group>"; };
+		F7BF195CC85058E2F2403568 /* RecommendationCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecommendationCardView.swift; sourceTree = "<group>"; };
+		FB11F64BA890A2D299741C04 /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
+		SNAP0000000000001234 /* WidgetSnapshotTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetSnapshotTests.swift; sourceTree = "<group>"; };
+		D23128D11889476F8C8C5473 /* RekindleUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RekindleUITests.swift; sourceTree = "<group>"; };
+		UITEST00000000000001 /* RekindleUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RekindleUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		DEFC56872F9872D600FB945A /* Exceptions for "RekindleWidget" folder in "RekindleWidgetExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = DEFC566C2F9872D500FB945A /* RekindleWidgetExtension */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		DEFC56732F9872D500FB945A /* RekindleWidget */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				DEFC56872F9872D600FB945A /* Exceptions for "RekindleWidget" folder in "RekindleWidgetExtension" target */,
+			);
+			path = RekindleWidget;
+			sourceTree = "<group>";
+		};
+/* End PBXFileSystemSynchronizedRootGroup section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		DEFC566A2F9872D500FB945A /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DEFC56722F9872D500FB945A /* SwiftUI.framework in Frameworks */,
+				DEFC56702F9872D500FB945A /* WidgetKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		0932E58897C6001D879575E2 = {
+			isa = PBXGroup;
+			children = (
+				DEFC56942F98755800FB945A /* RekindleWidgetExtension.entitlements */,
+				9B1DE3780BF89DA7AD2A4660 /* Rekindle */,
+				DEFC56732F9872D500FB945A /* RekindleWidget */,
+				DEFC566E2F9872D500FB945A /* Frameworks */,
+				33ACEE3A2472D3BDB3DD86E8 /* Products */,
+				A1B2C3D4E5F6A7B8C9D0E1F2 /* RekindleUITests */,
+			);
+			sourceTree = "<group>";
+		};
+		0B6C35CBF93C0F702D82F274 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				DEFC56982F98768D00FB945A /* SharedModelContainer.swift */,
+				224A77DC33494F75BDDF86BB /* AppSettings.swift */,
+				67AD267F21E21DACF00519F6 /* Recommendation.swift */,
+				78B8DDE72A5556290F4F7C2E /* RekindleContact.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		0CFB4CBBB732E4A3250D1DF4 /* History */ = {
+			isa = PBXGroup;
+			children = (
+				C5C97D484E7ADCC3EC83922B /* HistoryView.swift */,
+			);
+			path = History;
+			sourceTree = "<group>";
+		};
+		32072F39B94020E9E58BFA71 /* Home */ = {
+			isa = PBXGroup;
+			children = (
+				300FC33FA7BA1471A65A636D /* HomeView.swift */,
+				F7BF195CC85058E2F2403568 /* RecommendationCardView.swift */,
+			);
+			path = Home;
+			sourceTree = "<group>";
+		};
+		33ACEE3A2472D3BDB3DD86E8 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				2D039A3B94806443C3DFE75F /* Rekindle.app */,
+				DEFC566D2F9872D500FB945A /* RekindleWidgetExtension.appex */,
+				UITEST00000000000001 /* RekindleUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		3D4F0943D34E1687DDFF4217 /* Contacts */ = {
+			isa = PBXGroup;
+			children = (
+				6B479DE5AE28D88F59E45B9C /* ContactsListView.swift */,
+			);
+			path = Contacts;
+			sourceTree = "<group>";
+		};
+		4F903B2448F53733AC31D412 /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				7F6C23AEB7AD0561BF3F2827 /* SettingsView.swift */,
+			);
+			path = Settings;
+			sourceTree = "<group>";
+		};
+		8A0CBE4D48EA5E97CD6CD1D3 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				2B0C93889DB94FC2BCE9B19D /* BackgroundTaskService.swift */,
+				70D2EA979F5F829356CFEAE5 /* ContactService.swift */,
+				FB11F64BA890A2D299741C04 /* NotificationService.swift */,
+				63BF7D7CE925A67A9C585435 /* RecommendationEngine.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		9B1DE3780BF89DA7AD2A4660 /* Rekindle */ = {
+			isa = PBXGroup;
+			children = (
+				A5BA871649F3CB03EC057D77 /* Assets.xcassets */,
+				7F236E0846B4C757C8C40FA6 /* ContentView.swift */,
+				F1A2B3C4D5E6F70819203042 /* AppRouter.swift */,
+				21A6E70BB656C998891AA517 /* Rekindle.entitlements */,
+				7A6B6EB9DFD7D90F6E8E70DE /* RekindleApp.swift */,
+				0B6C35CBF93C0F702D82F274 /* Models */,
+				8A0CBE4D48EA5E97CD6CD1D3 /* Services */,
+				AD882A367A927E0037337262 /* Theme */,
+				B497B8E72122C09458B6448A /* ViewModels */,
+				BE9E3C6BE009AFA818B46FAF /* Views */,
+			);
+			path = Rekindle;
+			sourceTree = "<group>";
+		};
+		AD882A367A927E0037337262 /* Theme */ = {
+			isa = PBXGroup;
+			children = (
+				E1BC8F1E1F4F46EE4D2BD291 /* Theme.swift */,
+			);
+			path = Theme;
+			sourceTree = "<group>";
+		};
+		B497B8E72122C09458B6448A /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				6071D613593297FF431A1815 /* ContactsViewModel.swift */,
+				6273C871F990013E37718422 /* HistoryViewModel.swift */,
+				6E2211F4827AEE9A05B3B9F8 /* HomeViewModel.swift */,
+				E4F2D3FE116BED833F5834B4 /* SettingsViewModel.swift */,
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		BE9E3C6BE009AFA818B46FAF /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				3D4F0943D34E1687DDFF4217 /* Contacts */,
+				0CFB4CBBB732E4A3250D1DF4 /* History */,
+				32072F39B94020E9E58BFA71 /* Home */,
+				4F903B2448F53733AC31D412 /* Settings */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		DEFC566E2F9872D500FB945A /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				DEFC566F2F9872D500FB945A /* WidgetKit.framework */,
+				DEFC56712F9872D500FB945A /* SwiftUI.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+
+		A1B2C3D4E5F6A7B8C9D0E1F2 /* RekindleUITests */ = {
+			isa = PBXGroup;
+			children = (
+				D23128D11889476F8C8C5473 /* RekindleUITests.swift */,
+				SNAP0000000000001234 /* WidgetSnapshotTests.swift */,
+			);
+			path = RekindleUITests;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		5D4DB5F7F4A435BD812533ED /* Rekindle */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = CB18E992D7681ECCD11C72A1 /* Build configuration list for PBXNativeTarget "Rekindle" */;
+			buildPhases = (
+				EA79922018ED9467917765F2 /* Sources */,
+				292C7802D8DB683B1BE3EC18 /* Resources */,
+				DEFC56842F9872D600FB945A /* Embed Foundation Extensions */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				DEFC56822F9872D600FB945A /* PBXTargetDependency */,
+			);
+			name = Rekindle;
+			packageProductDependencies = (
+			);
+			productName = Rekindle;
+			productReference = 2D039A3B94806443C3DFE75F /* Rekindle.app */;
+			productType = "com.apple.product-type.application";
+		};
+		DEFC566C2F9872D500FB945A /* RekindleWidgetExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = DEFC56882F9872D600FB945A /* Build configuration list for PBXNativeTarget "RekindleWidgetExtension" */;
+			buildPhases = (
+				DEFC56692F9872D500FB945A /* Sources */,
+				DEFC566A2F9872D500FB945A /* Frameworks */,
+				DEFC566B2F9872D500FB945A /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				DEFC56732F9872D500FB945A /* RekindleWidget */,
+			);
+			name = RekindleWidgetExtension;
+			packageProductDependencies = (
+			);
+			productName = RekindleWidgetExtension;
+			productReference = DEFC566D2F9872D500FB945A /* RekindleWidgetExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+
+		80BB8C56759B48679FADF23C /* RekindleUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D94899B3C83642DDBE503EDA /* Build configuration list for PBXNativeTarget "RekindleUITests" */;
+			buildPhases = (
+				320A42588B974605B8F0FBEE /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				1A19704295024A139F3B94B7 /* PBXTargetDependency */,
+			);
+			name = RekindleUITests;
+			productName = RekindleUITests;
+			productReference = UITEST00000000000001 /* RekindleUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		4F494126E38A494DDE80DC8D /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastSwiftUpdateCheck = 2620;
+				LastUpgradeCheck = 1500;
+				TargetAttributes = {
+					DEFC566C2F9872D500FB945A = {
+						CreatedOnToolsVersion = 26.2;
+					};
+				};
+			};
+			buildConfigurationList = 4D0F65D52AB0256050B62E33 /* Build configuration list for PBXProject "Rekindle" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = 0932E58897C6001D879575E2;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 33ACEE3A2472D3BDB3DD86E8 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				5D4DB5F7F4A435BD812533ED /* Rekindle */,
+				DEFC566C2F9872D500FB945A /* RekindleWidgetExtension */,
+				80BB8C56759B48679FADF23C /* RekindleUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		292C7802D8DB683B1BE3EC18 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CB75892A8F51404E5F9A1997 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		DEFC566B2F9872D500FB945A /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		DEFC56692F9872D500FB945A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DE9670232F9A8F6900AEE160 /* RecommendationEngine.swift in Sources */,
+				DEFC56992F98768D00FB945A /* SharedModelContainer.swift in Sources */,
+				DEFC56962F9875D400FB945A /* Recommendation.swift in Sources */,
+				DEFC56972F9875DC00FB945A /* AppSettings.swift in Sources */,
+				DEFC56952F9875CE00FB945A /* RekindleContact.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		EA79922018ED9467917765F2 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1389E390C2EB5A503749CA78 /* AppSettings.swift in Sources */,
+				BD66CD1E57A7F880968C07F6 /* BackgroundTaskService.swift in Sources */,
+				59FAE47E481BA9402C2105B1 /* ContactService.swift in Sources */,
+				3E93206DE57815BA93FA0655 /* ContactsListView.swift in Sources */,
+				E71F4DC07756D3CECAF788DE /* ContactsViewModel.swift in Sources */,
+				777544FF6D106CB14D645F9F /* ContentView.swift in Sources */,
+				F1A2B3C4D5E6F70819203041 /* AppRouter.swift in Sources */,
+				D79653D3AED3E39DE29A8419 /* HistoryView.swift in Sources */,
+				F0C2125ED51B142C6CE0DB96 /* HistoryViewModel.swift in Sources */,
+				DEFC569A2F98768D00FB945A /* SharedModelContainer.swift in Sources */,
+				D68CCC1E93278720AD54484B /* HomeView.swift in Sources */,
+				BBAA4697D827C65F7D2171A4 /* HomeViewModel.swift in Sources */,
+				FB419C9A9FB6A61595F91884 /* NotificationService.swift in Sources */,
+				CFAA2F1191BED0815CE89DCF /* Recommendation.swift in Sources */,
+				48BCE8F427344F65B4434598 /* RecommendationCardView.swift in Sources */,
+				01BC548EE5AB6B1D66D59A7D /* RecommendationEngine.swift in Sources */,
+				35A31BB1D232B55CBB22FD75 /* RekindleApp.swift in Sources */,
+				D70CCE16B63449421D685674 /* RekindleContact.swift in Sources */,
+				522CBD9D3CAE6AE6D77F48D5 /* SettingsView.swift in Sources */,
+				1A408B939E5DACE8DAD24E65 /* SettingsViewModel.swift in Sources */,
+				F8204332C03FAC83D31E49A3 /* Theme.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+
+		320A42588B974605B8F0FBEE /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				36DF22065E7846A396413748 /* RekindleUITests.swift in Sources */,
+				SNAP0000000000005678 /* WidgetSnapshotTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		DEFC56822F9872D600FB945A /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = DEFC566C2F9872D500FB945A /* RekindleWidgetExtension */;
+			targetProxy = DEFC56812F9872D600FB945A /* PBXContainerItemProxy */;
+		};
+
+		1A19704295024A139F3B94B7 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 5D4DB5F7F4A435BD812533ED /* Rekindle */;
+			targetProxy = 5C0AFAD68B424464B52E851F /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		8AA42A2A280A424D68D41978 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = Rekindle/Rekindle.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CURRENT_PROJECT_VERSION = 12;
+				DEVELOPMENT_TEAM = 72F9LTDQ9N;
+				INFOPLIST_KEY_BGTaskSchedulerPermittedIdentifiers_Item0 = com.rekindle.app.generateRecommendations;
+				INFOPLIST_KEY_NSContactsUsageDescription = "Rekindle needs access to your contacts to suggest people to reconnect with. We never modify or share your contacts.";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UIBackgroundModes = fetch;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 2.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.pranavsanghvi.rekindle;
+				PRODUCT_NAME = Rekindle;
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		9C0DF0E2911AEE46FCAEC7A6 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = Rekindle/Rekindle.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CURRENT_PROJECT_VERSION = 12;
+				DEVELOPMENT_TEAM = 72F9LTDQ9N;
+				INFOPLIST_KEY_BGTaskSchedulerPermittedIdentifiers_Item0 = com.rekindle.app.generateRecommendations;
+				INFOPLIST_KEY_NSContactsUsageDescription = "Rekindle needs access to your contacts to suggest people to reconnect with. We never modify or share your contacts.";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UIBackgroundModes = fetch;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 2.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.pranavsanghvi.rekindle;
+				PRODUCT_NAME = Rekindle;
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+		B9C28B841350995E174CA23D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 2;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Rekindle/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 1.1.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.9;
+			};
+			name = Release;
+		};
+		D2D4C87FA1E0AEF2A7E9DD50 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 2;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Rekindle/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 1.1.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.9;
+			};
+			name = Debug;
+		};
+		DEFC56852F9872D600FB945A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CODE_SIGN_ENTITLEMENTS = RekindleWidgetExtension.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 12;
+				DEVELOPMENT_TEAM = 72F9LTDQ9N;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = RekindleWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = RekindleWidget;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MARKETING_VERSION = 2.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.pranavsanghvi.rekindle.RekindleWidget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		DEFC56862F9872D600FB945A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CODE_SIGN_ENTITLEMENTS = RekindleWidgetExtension.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 12;
+				DEVELOPMENT_TEAM = 72F9LTDQ9N;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = RekindleWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = RekindleWidget;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MARKETING_VERSION = 2.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.pranavsanghvi.rekindle.RekindleWidget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		4D0F65D52AB0256050B62E33 /* Build configuration list for PBXProject "Rekindle" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D2D4C87FA1E0AEF2A7E9DD50 /* Debug */,
+				B9C28B841350995E174CA23D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		CB18E992D7681ECCD11C72A1 /* Build configuration list for PBXNativeTarget "Rekindle" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				8AA42A2A280A424D68D41978 /* Debug */,
+				9C0DF0E2911AEE46FCAEC7A6 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		DEFC56882F9872D600FB945A /* Build configuration list for PBXNativeTarget "RekindleWidgetExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				DEFC56852F9872D600FB945A /* Debug */,
+				DEFC56862F9872D600FB945A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+
+		D94899B3C83642DDBE503EDA /* Build configuration list for PBXNativeTarget "RekindleUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				97A95698FA3C4EC6B0403501 /* Debug */,
+				0C0DD71E982145FD8C32E3CF /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		97A95698FA3C4EC6B0403501 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.pranavsanghvi.rekindle.uitests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TEST_TARGET_NAME = Rekindle;
+			};
+			name = Debug;
+		};
+		0C0DD71E982145FD8C32E3CF /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.pranavsanghvi.rekindle.uitests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TEST_TARGET_NAME = Rekindle;
+			};
+			name = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 4F494126E38A494DDE80DC8D /* Project object */;
+}
