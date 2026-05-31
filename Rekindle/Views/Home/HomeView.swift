@@ -4,11 +4,23 @@ import SwiftData
 struct HomeView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.scenePhase) private var scenePhase
+    @Environment(AppRouter.self) private var router
     @State private var viewModel = HomeViewModel()
     @Query private var settingsArray: [AppSettings]
+    @Query(filter: #Predicate<RekindleContact> { $0.isFavorite }) private var favoriteContacts: [RekindleContact]
     @State private var favoriteToRemove: RekindleContact?
+    @AppStorage("hasSeenFavoritesNudge") private var hasSeenFavoritesNudge = false
 
     private var settings: AppSettings? { settingsArray.first }
+
+    /// One-time nudge to introduce Favorites: shown when the feature is on but the user
+    /// hasn't starred anyone yet (and hasn't dismissed it).
+    private var shouldShowFavoritesNudge: Bool {
+        settings?.isCurrentlyPaused != true
+            && settings?.favoritesEnabled == true
+            && favoriteContacts.isEmpty
+            && !hasSeenFavoritesNudge
+    }
 
     var body: some View {
         NavigationStack {
@@ -36,6 +48,8 @@ struct HomeView: View {
                         // "Get More Picks" — so any newly added pick appears above this section.
                         if !viewModel.favoriteRecommendations.isEmpty {
                             favoritesSection
+                        } else if shouldShowFavoritesNudge {
+                            favoritesNudge
                         }
 
                         // Get More Picks — only when there are standard picks today and not paused
@@ -136,6 +150,46 @@ struct HomeView: View {
                 .offset(y: -12)
         }
         .padding(.top, 18)
+    }
+
+    // MARK: - Favorites Discovery Nudge
+
+    private var favoritesNudge: some View {
+        HStack(spacing: 12) {
+            Image(systemName: "star.fill")
+                .font(.title3)
+                .foregroundStyle(Theme.amber)
+            VStack(alignment: .leading, spacing: 2) {
+                Text("Keep your closest people close")
+                    .font(Theme.headline)
+                    .foregroundStyle(.primary)
+                Text("Star close friends & family to reach out regularly")
+                    .font(Theme.caption)
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.leading)
+            }
+            Spacer(minLength: 8)
+            // Plain chevron-style dismiss (matches the card chevrons), vertically centered
+            Button {
+                withAnimation(Theme.springAnimation) { hasSeenFavoritesNudge = true }
+            } label: {
+                Image(systemName: "xmark")
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(.tertiary)
+                    .padding(.leading, 8)
+                    .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+        }
+        .padding(Theme.paddingMedium)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(
+            RoundedRectangle(cornerRadius: Theme.cardCornerRadius, style: .continuous)
+                .fill(Theme.amber.opacity(0.15))
+        )
+        .contentShape(RoundedRectangle(cornerRadius: Theme.cardCornerRadius, style: .continuous))
+        .onTapGesture { router.openFavorites() }
+        .padding(.top, 4)
     }
 
     // MARK: - Return from Messages Prompt

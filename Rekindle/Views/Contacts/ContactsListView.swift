@@ -206,11 +206,30 @@ struct ContactsListView: View {
     }
 
     private var emptyFilterView: some View {
-        VStack(spacing: 12) {
+        VStack(spacing: 16) {
             Text(emptyFilterMessage)
                 .font(Theme.body)
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
+
+            // In Favorites, the star lives on rows in the Active list — give a way to get there.
+            if selectedFilter == .favorites {
+                Button {
+                    withAnimation(Theme.springAnimation) { selectedFilter = .active }
+                } label: {
+                    HStack(spacing: 6) {
+                        Image(systemName: "person.2.fill")
+                        Text("Browse contacts")
+                    }
+                    .font(Theme.headline)
+                    .foregroundStyle(Theme.coral)
+                    .padding(.vertical, 12)
+                    .padding(.horizontal, 24)
+                    .background(Theme.coral.opacity(0.1))
+                    .clipShape(Capsule())
+                }
+                .buttonStyle(.plain)
+            }
         }
         .frame(maxWidth: .infinity)
         .padding(.top, 60)
@@ -219,7 +238,7 @@ struct ContactsListView: View {
 
     private var emptyFilterMessage: String {
         switch selectedFilter {
-        case .favorites: return "No favorites yet.\nTap the star on a contact to add them."
+        case .favorites: return "No favorites yet.\nBrowse your contacts and tap the ⭐ to add close friends & family."
         case .snoozed: return "No snoozed contacts"
         case .blocked: return "No blocked contacts"
         case .active: return "No contacts"
