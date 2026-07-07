@@ -21,7 +21,7 @@ struct ContactsListView: View {
     var body: some View {
         NavigationStack {
             Group {
-                if contactService.authorizationStatus != .authorized {
+                if !contactService.hasContactsAccess {
                     permissionView
                 } else if viewModel.isLoading {
                     ProgressView("Loading contacts...")
@@ -36,7 +36,7 @@ struct ContactsListView: View {
             .searchable(text: $viewModel.searchText, prompt: "Search contacts")
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
-                    if contactService.authorizationStatus == .authorized {
+                    if contactService.hasContactsAccess {
                         Button {
                             Task {
                                 try? await contactService.importContacts(modelContext: modelContext)
@@ -89,6 +89,14 @@ struct ContactsListView: View {
         }
     }
 
+    /// Re-sync from the system after the limited-access selection changes.
+    private func reimportContacts() {
+        Task {
+            try? await contactService.importContacts(modelContext: modelContext)
+            viewModel.loadContacts()
+        }
+    }
+
     /// Star tapped: add immediately, but confirm before removing.
     private func toggleFavorite(_ contact: RekindleContact) {
         if contact.isFavorite {
@@ -116,17 +124,25 @@ struct ContactsListView: View {
                 .padding(.horizontal, Theme.paddingLarge)
 
             Button {
-                Task {
-                    let granted = await contactService.requestAccess()
-                    if granted {
-                        try? await contactService.importContacts(modelContext: modelContext)
-                        viewModel.loadContacts()
+                if contactService.authorizationStatus == .notDetermined {
+                    Task {
+                        let granted = await contactService.requestAccess()
+                        if granted {
+                            try? await contactService.importContacts(modelContext: modelContext)
+                            viewModel.loadContacts()
+                        }
+                    }
+                } else {
+                    // Already denied/restricted — the system won't re-prompt,
+                    // so send the user to the app's Settings page instead.
+                    if let url = URL(string: UIApplication.openSettingsURLString) {
+                        UIApplication.shared.open(url)
                     }
                 }
             } label: {
                 HStack {
                     Image(systemName: "person.crop.circle.badge.checkmark")
-                    Text("Allow Access")
+                    Text(contactService.authorizationStatus == .notDetermined ? "Allow Access" : "Open Settings")
                 }
             }
             .buttonStyle(GradientPillButtonStyle())
@@ -147,9 +163,30 @@ struct ContactsListView: View {
                 .font(.system(size: 80))
             Text("No Contacts Found")
                 .font(Theme.title)
-            Text("Tap the refresh button to import your contacts.")
+            Text(contactService.isLimitedAccess
+                 ? "You haven't shared any contacts with Rekindle yet."
+                 : "Tap the refresh button to import your contacts.")
                 .font(Theme.body)
                 .foregroundStyle(.secondary)
+                .multilineTextAlignment(.center)
+
+            if contactService.isLimitedAccess {
+                if #available(iOS 18.0, *) {
+                    ManageContactSelectionButton(onSelectionChanged: reimportContacts) {
+                        HStack(spacing: 6) {
+                            Image(systemName: "person.crop.circle.badge.plus")
+                            Text("Share Contacts")
+                        }
+                        .font(Theme.headline)
+                        .foregroundStyle(Theme.coral)
+                        .padding(.vertical, 12)
+                        .padding(.horizontal, 24)
+                        .background(Theme.coral.opacity(0.1))
+                        .clipShape(Capsule())
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
         }
         .padding()
         .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -159,6 +196,14 @@ struct ContactsListView: View {
 
     private var contactsList: some View {
         ScrollView {
+            if contactService.isLimitedAccess {
+                LimitedAccessBanner {
+                    reimportContacts()
+                }
+                .padding(.horizontal, Theme.paddingMedium)
+                .padding(.top, Theme.paddingMedium)
+            }
+
             // Filter tabs
             Picker("Filter", selection: $selectedFilter) {
                 ForEach(ContactFilter.allCases, id: \.self) { filter in

@@ -289,9 +289,30 @@ struct SettingsView: View {
                     .font(Theme.body)
                     .foregroundStyle(Theme.coral)
                 }
-                .disabled(contactService.authorizationStatus != .authorized || contactService.isImporting)
+                .disabled(!contactService.hasContactsAccess || contactService.isImporting)
+
+                if contactService.isLimitedAccess {
+                    if #available(iOS 18.0, *) {
+                        ManageContactSelectionButton(onSelectionChanged: {
+                            Task {
+                                try? await contactService.importContacts(modelContext: modelContext)
+                            }
+                        }) {
+                            HStack {
+                                Image(systemName: "person.crop.circle.badge.plus")
+                                Text("Manage Selected Contacts")
+                            }
+                            .font(Theme.body)
+                            .foregroundStyle(Theme.coral)
+                        }
+                    }
+                }
             } header: {
                 Text("Contacts")
+            } footer: {
+                if contactService.isLimitedAccess {
+                    Text("You've shared a subset of your contacts with Rekindle. Add more people to widen your pool of picks.")
+                }
             }
 
             // MARK: - Notifications Section

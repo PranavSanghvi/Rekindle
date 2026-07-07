@@ -150,8 +150,117 @@ final class RekindleUITests: XCTestCase {
             sleep(1)
         }
         capture("fav_empty_state")
-        XCTAssertTrue(app.buttons["Browse contacts"].waitForExistence(timeout: 3),
-                      "Favorites empty state should offer a 'Browse contacts' button")
+        // Precondition: no favorites in the store. testFavoritesFlow needs the
+        // opposite, so skip (not fail) when a favorite exists in this run.
+        if !app.buttons["Browse contacts"].waitForExistence(timeout: 3) {
+            if app.staticTexts["Kate Bell"].exists {
+                throw XCTSkip("Store has favorites; empty state not reachable in this run")
+            }
+            XCTFail("Favorites empty state should offer a 'Browse contacts' button")
+        }
+    }
+
+    // MARK: - Limited contacts access (iOS 18+)
+    // Drives the real permission prompt end-to-end: choose "Select Contacts",
+    // pick two, and verify the app treats limited access as having access
+    // (contacts list + banner, Settings "Limited" + Manage row).
+    // Requires contacts permission to be un-determined — reset it first with:
+    //   xcrun simctl privacy <device> reset contacts com.pranavsanghvi.rekindle
+    // Skips (rather than fails) when permission is already granted.
+    // The picker is a system remote view, so rows are tapped by screen
+    // coordinate — sized for the iPhone "17.1" simulator used by this suite.
+
+    func testLimitedAccessFlow() throws {
+        let tabs = app.tabBars.firstMatch
+        tabs.buttons["Contacts"].tap()
+        sleep(1)
+        capture("p1_gate")
+
+        let allow = app.buttons["Allow Access"]
+        guard allow.waitForExistence(timeout: 4) else {
+            throw XCTSkip("Contacts permission already determined — reset it via simctl to run this test")
+        }
+        allow.tap()
+        sleep(2)
+
+        let springboard = XCUIApplication(bundleIdentifier: "com.apple.springboard")
+        capture("p2_prompt")
+
+        // Two-step prompt on this iOS: "Continue" first, then the access-level choice
+        let cont = springboard.buttons["Continue"]
+        if cont.waitForExistence(timeout: 3) {
+            cont.tap()
+            sleep(2)
+        }
+        capture("p2b_access_choice")
+
+        // Pick the limited-access option in the system prompt (label varies by iOS version)
+        let candidates = ["Limit Access…", "Limit Access...", "Select Contacts…", "Select Contacts...", "Select Contacts", "Choose Contacts…", "Choose Contacts"]
+        var tapped = false
+        for label in candidates {
+            let b = springboard.buttons[label]
+            if b.waitForExistence(timeout: 2) { b.tap(); tapped = true; break }
+        }
+        if !tapped {
+            for label in candidates {
+                let b = app.buttons[label]
+                if b.waitForExistence(timeout: 2) { b.tap(); tapped = true; break }
+            }
+        }
+        XCTAssertTrue(tapped, "Should find a limited-access option in the system prompt")
+        sleep(2)
+        capture("p3_picker")
+
+        // Select two contacts in the picker, then confirm.
+        // The picker is a system remote view — element taps don't toggle the
+        // selection circles, so tap by screen coordinate instead.
+        // Rows (from p3_picker capture): John Appleseed ~0.336, Kate Bell ~0.449 of screen height.
+        app.coordinate(withNormalizedOffset: CGVector(dx: 0.35, dy: 0.336)).tap()
+        sleep(1)
+        app.coordinate(withNormalizedOffset: CGVector(dx: 0.35, dy: 0.449)).tap()
+        sleep(1)
+        capture("p4_selected")
+        // "Continue" pill at ~0.868 of screen height; enabled once something is selected
+        let contBtn = app.buttons["Continue"]
+        if contBtn.waitForExistence(timeout: 2) && contBtn.isEnabled {
+            contBtn.tap()
+        } else {
+            app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.868)).tap()
+        }
+        // Final confirmation: "Allow access to N contacts?" → Allow Selected Contacts
+        for host in [app!, springboard] {
+            let allowSelected = host.buttons["Allow Selected Contacts"]
+            if allowSelected.waitForExistence(timeout: 3) {
+                allowSelected.tap()
+                break
+            }
+        }
+        sleep(3)
+        capture("p5_contacts_after")
+
+        // The contacts list should now show with the limited-access banner
+        XCTAssertTrue(app.staticTexts["Limited access"].waitForExistence(timeout: 6),
+                      "Contacts list should show the limited-access banner")
+
+        // Settings should show "Limited" + Manage Selected Contacts
+        tabs.buttons["Settings"].tap()
+        sleep(1)
+        app.swipeUp()
+        sleep(1)
+        capture("p6_settings")
+        XCTAssertTrue(app.staticTexts["Limited"].waitForExistence(timeout: 4),
+                      "Settings permission row should read Limited")
+        XCTAssertTrue(app.buttons["Manage Selected Contacts"].waitForExistence(timeout: 4) ||
+                      app.staticTexts["Manage Selected Contacts"].waitForExistence(timeout: 2),
+                      "Settings should offer Manage Selected Contacts")
+
+        // Open the in-app picker from Settings to prove the button works
+        let manageBtn = app.buttons["Manage Selected Contacts"].exists
+            ? app.buttons["Manage Selected Contacts"]
+            : app.staticTexts["Manage Selected Contacts"]
+        manageBtn.tap()
+        sleep(2)
+        capture("p7_manage_picker")
     }
 
     // MARK: - Widget (Small 2×2 and Medium 4×2)

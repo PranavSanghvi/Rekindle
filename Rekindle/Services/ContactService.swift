@@ -21,6 +21,24 @@ final class ContactService: ObservableObject {
         authorizationStatus = CNContactStore.authorizationStatus(for: .contacts)
     }
 
+    /// True when the app can read contacts — full access, or the subset the user
+    /// shared via limited access (iOS 18+). Fetches under limited access simply
+    /// return only the shared contacts.
+    var hasContactsAccess: Bool {
+        switch authorizationStatus {
+        case .authorized, .limited: return true
+        default: return false
+        }
+    }
+
+    /// True when the user shared only a subset of their contacts (iOS 18+).
+    var isLimitedAccess: Bool {
+        switch authorizationStatus {
+        case .limited: return true
+        default: return false
+        }
+    }
+
     /// Request access to contacts. Returns true if granted.
     func requestAccess() async -> Bool {
         do {
@@ -39,7 +57,7 @@ final class ContactService: ObservableObject {
 
     /// Import contacts from iOS into SwiftData
     func importContacts(modelContext: ModelContext) async throws {
-        guard authorizationStatus == .authorized else { return }
+        guard hasContactsAccess else { return }
 
         isImporting = true
         defer { isImporting = false }
