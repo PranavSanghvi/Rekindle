@@ -6,6 +6,7 @@ struct HomeView: View {
     @Environment(\.scenePhase) private var scenePhase
     @Environment(AppRouter.self) private var router
     @State private var viewModel = HomeViewModel()
+    @EnvironmentObject private var contactService: ContactService
     @Query private var settingsArray: [AppSettings]
     @Query(filter: #Predicate<RekindleContact> { $0.isFavorite }) private var favoriteContacts: [RekindleContact]
     @State private var favoriteToRemove: RekindleContact?
@@ -290,6 +291,10 @@ struct HomeView: View {
                 .font(Theme.body)
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
+
+            if contactService.isLimitedAccess {
+                limitedAccessHint
+            }
         }
         .frame(maxWidth: .infinity, minHeight: 300)
         .padding(.top, 60)
@@ -304,9 +309,42 @@ struct HomeView: View {
             Text("Great job staying connected today.")
                 .font(Theme.body)
                 .foregroundStyle(.secondary)
+
+            if contactService.isLimitedAccess {
+                limitedAccessHint
+            }
         }
         .frame(maxWidth: .infinity, minHeight: 300)
         .padding(.top, 60)
+    }
+
+    /// Shown in empty states under limited contacts access: a small pool
+    /// runs out of fresh picks quickly, so nudge toward sharing more.
+    private var limitedAccessHint: some View {
+        VStack(spacing: 10) {
+            Text("Rekindle only sees the contacts you've shared with it.")
+                .font(Theme.caption)
+                .foregroundStyle(.secondary)
+                .multilineTextAlignment(.center)
+
+            if #available(iOS 18.0, *) {
+                ManageContactSelectionButton(onSelectionChanged: {
+                    Task {
+                        try? await contactService.importContacts(modelContext: modelContext)
+                        if let settings {
+                            viewModel.loadToday(settings: settings)
+                        }
+                    }
+                }) {
+                    Text("Share more contacts")
+                        .font(Theme.headline)
+                        .foregroundStyle(Theme.coral)
+                }
+                .buttonStyle(.plain)
+            }
+        }
+        .padding(.top, 4)
+        .padding(.horizontal, Theme.paddingLarge)
     }
 
     private var recommendationsView: some View {

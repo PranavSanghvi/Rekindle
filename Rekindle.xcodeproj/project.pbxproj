@@ -36,6 +36,7 @@
 		E71F4DC07756D3CECAF788DE /* ContactsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6071D613593297FF431A1815 /* ContactsViewModel.swift */; };
 		F0C2125ED51B142C6CE0DB96 /* HistoryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6273C871F990013E37718422 /* HistoryViewModel.swift */; };
 		F1A2B3C4D5E6F70819203041 /* AppRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1A2B3C4D5E6F70819203042 /* AppRouter.swift */; };
+		F1A2B3C4D5E6F70819203043 /* LimitedContactsAccess.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1A2B3C4D5E6F70819203044 /* LimitedContactsAccess.swift */; };
 		F8204332C03FAC83D31E49A3 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1BC8F1E1F4F46EE4D2BD291 /* Theme.swift */; };
 		FB419C9A9FB6A61595F91884 /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB11F64BA890A2D299741C04 /* NotificationService.swift */; };
 		SNAP0000000000005678 /* WidgetSnapshotTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = SNAP0000000000001234 /* WidgetSnapshotTests.swift */; };
@@ -100,6 +101,7 @@
 		E1BC8F1E1F4F46EE4D2BD291 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
 		E4F2D3FE116BED833F5834B4 /* SettingsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewModel.swift; sourceTree = "<group>"; };
 		F1A2B3C4D5E6F70819203042 /* AppRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppRouter.swift; sourceTree = "<group>"; };
+		F1A2B3C4D5E6F70819203044 /* LimitedContactsAccess.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LimitedContactsAccess.swift; sourceTree = "<group>"; };
 		F7BF195CC85058E2F2403568 /* RecommendationCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecommendationCardView.swift; sourceTree = "<group>"; };
 		FB11F64BA890A2D299741C04 /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
 		SNAP0000000000001234 /* WidgetSnapshotTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetSnapshotTests.swift; sourceTree = "<group>"; };
@@ -194,6 +196,7 @@
 			isa = PBXGroup;
 			children = (
 				6B479DE5AE28D88F59E45B9C /* ContactsListView.swift */,
+				F1A2B3C4D5E6F70819203044 /* LimitedContactsAccess.swift */,
 			);
 			path = Contacts;
 			sourceTree = "<group>";
@@ -430,6 +433,7 @@
 				E71F4DC07756D3CECAF788DE /* ContactsViewModel.swift in Sources */,
 				777544FF6D106CB14D645F9F /* ContentView.swift in Sources */,
 				F1A2B3C4D5E6F70819203041 /* AppRouter.swift in Sources */,
+				F1A2B3C4D5E6F70819203043 /* LimitedContactsAccess.swift in Sources */,
 				D79653D3AED3E39DE29A8419 /* HistoryView.swift in Sources */,
 				F0C2125ED51B142C6CE0DB96 /* HistoryViewModel.swift in Sources */,
 				DEFC569A2F98768D00FB945A /* SharedModelContainer.swift in Sources */,

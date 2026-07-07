@@ -46,9 +46,14 @@ struct ContentView: View {
             }
         }
         .onChange(of: scenePhase) { _, newPhase in
-            if newPhase == .active && contactService.authorizationStatus == .authorized {
-                Task {
-                    try? await contactService.importContacts(modelContext: modelContext)
+            if newPhase == .active {
+                // Pick up permission changes made in the Settings app (e.g. the
+                // user edits their limited-access selection) before syncing.
+                contactService.updateAuthorizationStatus()
+                if contactService.hasContactsAccess {
+                    Task {
+                        try? await contactService.importContacts(modelContext: modelContext)
+                    }
                 }
             }
         }
