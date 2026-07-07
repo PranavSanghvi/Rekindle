@@ -278,6 +278,15 @@ final class RekindleUITests: XCTestCase {
         sleep(2)
         capture("widget_jiggle_mode")
 
+        // If the long-press landed on a widget (crowded home screen), a context
+        // menu appears instead — enter edit mode through it.
+        let editHomeScreen = springboard.buttons["Edit Home Screen"]
+        if editHomeScreen.waitForExistence(timeout: 2) {
+            editHomeScreen.tap()
+            sleep(1)
+            capture("widget_jiggle_via_menu")
+        }
+
         // iOS 16-17: "+" top-left. iOS 18+: "Edit" -> "Add Widget".
         // Try "+" first, fall back to Edit flow.
         let plusBtn = springboard.buttons["+"]
@@ -331,14 +340,34 @@ final class RekindleUITests: XCTestCase {
             }
         }
 
-        // Exit jiggle mode
-        let doneBtn = springboard.buttons["Done"]
-        if doneBtn.waitForExistence(timeout: 3) {
-            doneBtn.tap()
-            sleep(1)
-        }
+        // Exit jiggle mode via Home — tapping "Done" is ambiguous because the
+        // widget's own "✓ Done" intent buttons match the same query.
         XCUIDevice.shared.press(.home)
         sleep(1)
         capture("widget_medium_home_screen")
+
+        // --- Cleanup (best effort): remove one Rekindle widget so repeated
+        // runs don't accumulate widgets until the home screen misbehaves.
+        let widget = springboard.otherElements.matching(
+            NSPredicate(format: "label CONTAINS[c] 'Rekindle'")
+        ).firstMatch
+        if widget.exists {
+            widget.press(forDuration: 2)
+            sleep(1)
+            let removeOpt = springboard.buttons["Remove Widget"]
+            if removeOpt.waitForExistence(timeout: 3) {
+                removeOpt.tap()
+                let confirm = springboard.alerts.buttons["Remove"].firstMatch.exists
+                    ? springboard.alerts.buttons["Remove"].firstMatch
+                    : springboard.buttons["Remove"].firstMatch
+                if confirm.waitForExistence(timeout: 3) {
+                    confirm.tap()
+                    sleep(1)
+                }
+            }
+            XCUIDevice.shared.press(.home)
+            sleep(1)
+            capture("widget_after_cleanup")
+        }
     }
 }
